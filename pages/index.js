@@ -14,9 +14,7 @@ export default function Home() {
 
   // const dispatch = useDispatch();
   
-  exploreData.map((item) => {
-    console.log(item)
-  })
+ 
   const ref = useRef(null);
   const handleClick = () => {
     

@@ -7,10 +7,14 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch } from "react-redux";
 import { AddNote,DeleteNote } from "../redux/CounterSlice";
 import { BiTime } from 'react-icons/bi';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import Image from 'next/image';
 
 const Addcontent = ({action,spaceId,Urldata}) => {
     const [ToggleState, setToggleState] = useState(1);
-
+    const [showFileData,setShowFileData] = useState(null)
+    const router = useRouter()
     const toggleTab = (index) => {
       setToggleState(index);
     };
@@ -56,10 +60,11 @@ const Addcontent = ({action,spaceId,Urldata}) => {
         const data = new FormData()
         data.append('file',files)
         data.append('spaceId',spaceId)
-        data.append('name','zaid images')
+        data.append('name','files')
         data.append('position',"{x:0.y:0.z:0}")
         data.append('rotation','{x:0.y:0.z:0}')
         data.append('scale','{x:1.y:1.z:1}')
+        data.append('type','files')
         console.log('add files')
         
         await axios.post(url,data,{
@@ -110,6 +115,7 @@ const Addcontent = ({action,spaceId,Urldata}) => {
         data.append('position',"{x:0.y:0.z:0}")
         data.append('rotation','{x:0.y:0.z:0}')
         data.append('scale','{x:1.y:1.z:1}')
+        data.append('type','modal')
         
         await axios.post(url,data,{
           headers: {
@@ -118,7 +124,7 @@ const Addcontent = ({action,spaceId,Urldata}) => {
         })
         .then(function (response) {
             //handle success
-           toast.success('successfully upload')
+           toast.success('successfully modal upload')
            console.log(response)
        
           const modalGlb = {
@@ -139,6 +145,14 @@ const Addcontent = ({action,spaceId,Urldata}) => {
     
       const formats = ['txt','jpg','png','glb']
 
+      const fileGetUrl = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/getSpaceFiles/${router.query.id}/${router.query.type}`
+
+      useEffect(() => {
+        axios.get(fileGetUrl).then((response) => {
+          setShowFileData(response.data);
+        });
+      }, []);
+     
 
 
   return (
@@ -152,8 +166,8 @@ const Addcontent = ({action,spaceId,Urldata}) => {
     >
     <div className='add-tabs-container'>
         <button onClick={() => toggleTab(1)} className={`add-tabs-button ${getActiveClass(1,"tabs-button-active")}`}>RECENT</button>
-        <button onClick={() => toggleTab(2)} className={`add-tabs-button ${getActiveClass(2,"tabs-button-active")}`}>STUFF</button>
-        <button onClick={() => toggleTab(3)} className={`add-tabs-button ${getActiveClass(3,"tabs-button-active")}`}>NFTS</button>
+        <button onClick={() => toggleTab(2)} className={`add-tabs-button ${getActiveClass(2,"tabs-button-active")}`}>FILE</button>
+        <button onClick={() => toggleTab(3)} className={`add-tabs-button ${getActiveClass(3,"tabs-button-active")}`}>MODAL</button>
         <button onClick={() => toggleTab(4)} className={`add-tabs-button ${getActiveClass(4,"tabs-button-active")}`}>INTEGRATIONS</button>
         <button onClick={() => toggleTab(5)} className={`add-tabs-button ${getActiveClass(5,"tabs-button-active")}`}>UPLOAD</button>
     </div>
@@ -165,7 +179,58 @@ const Addcontent = ({action,spaceId,Urldata}) => {
        </div>
        <div className={`content ${getActiveClass(2,'active-content')}`}>
         <div className="add-content-container">
-          coming soon <span style={{marginLeft:'10px'}}><BiTime /></span>
+           {
+            showFileData?.map((item) => {
+              return (
+                <div className="imgborder" key={item.url}>
+                   <Image src={item.url}  layout="fill" quality={100} />
+                </div>
+              )
+            })
+           }
+           <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            <div className="imgborder">
+                   <Image src={'/images/login-images/logo.png'}  layout="fill" quality={100} />
+            </div>
+            
         </div>
        </div>
        <div className={`content ${getActiveClass(3,'active-content')}`}>

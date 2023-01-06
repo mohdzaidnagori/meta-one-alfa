@@ -21,12 +21,13 @@ const Content = ({channelName,username}) => {
   const setUsers = useUsers()[1]
   const [start, setStart] = useStart(true)
   const rtc = useClient()
+  const router = useRouter()
 
   const options = {
     // Pass your app ID here.
     appId: "1c25b0229b224c48a05674551e80719b",
     // Set the channel name.
-    channel: 'main1',
+    channel: router.query.id,
     // Pass a token if your project enables the App Certificate.
     token: null,
   };

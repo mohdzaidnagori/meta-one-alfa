@@ -602,6 +602,7 @@ position: relative;
    margin: 0 10px;
    outline: none;
    border: none;
+   color: black;
    background-color: transparent;
 }
 .spaces-search > form > button {
@@ -1194,11 +1195,18 @@ position: relative;
 }
 .add-content-container{
   display: flex;
-  align-items: center;
+  margin-block: 20px;
   justify-content: center;
-  width: 100%;
+  gap: 20px;
+  flex-wrap: wrap;
+  overflow-y: scroll;
   font-size: 30px;
   color: black;
+}
+.imgborder {
+  position: relative;
+  width: 190px;
+  height: 160px;
 }
 .sidbarBoxunity{
     display: flex;
@@ -1734,6 +1742,7 @@ input[type=range]::-webkit-slider-runnable-track {
   background-color: darkgrey;
   border-radius: 100px;
 }
+
 
 
 /* slug space style  */

@@ -81,13 +81,15 @@ const fetchMoreData = () => {
          <div className="row g-3">
             {
              enviroment && enviroment.length > 0 && enviroment.map((item,index) => {
+              console.log(item)
                 return (
                <Link key={index} href={{
                 pathname: '/spaces/unity',
                 query: { 
                   type: 'explore',
-                  id:item.id,
-                  name:item.name.toUpperCase()
+                  sceneId:item.id,
+                  name:item.name.toUpperCase(),
+                  id:item.id
                  },
                }}>
                  <div className='col-md-6'>

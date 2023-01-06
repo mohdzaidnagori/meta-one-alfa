@@ -437,6 +437,7 @@ export const UnityEnviroment = () => {
   sendMessage,
   loadingProgression,
   isLoaded,
+  initialisationError,
   takeScreenshot,
   addEventListener,
   removeEventListener
@@ -445,6 +446,10 @@ export const UnityEnviroment = () => {
   dataUrl: "/Build/Build.data",
   frameworkUrl: "/Build/Build.framework.js",
   codeUrl: "/Build/Build.wasm",
+  webglContextAttributes: {
+    preserveDrawingBuffer: false,
+  },
+  cacheControl: handleCacheControl,
 });
 const loading = Math.round(loadingProgression * 100)
 
@@ -456,7 +461,10 @@ const EnvironmentLoader = () => {
   console.log(unityJson)
   sendMessage("EnvironmentLoader", "MainModel", unityJson);
 }
-
+function handleCacheControl(url) {
+  console.log(`Cache control for ${url}`);
+  return "no-cache";
+}
 
 
 
@@ -497,7 +505,7 @@ const GlbUploader = () =>{
   console.log('glb uploader')
 }
 
-
+console.log(initialisationError)
 
 
 //   console.log('unity running')
