@@ -34,7 +34,7 @@ const Userspaces = ({userData ,loading,displayName}) => {
                   type: 'spaces',
                   id:item.listid,
                   name:item.name.toUpperCase(),
-                  sceneId:item.newSpacesID                 
+                  sceneId:item.newSpacesID,              
                  },
                  
                }}>

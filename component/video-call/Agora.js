@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { AddUser } from '../redux/CounterSlice'
 import { useAuth } from '../router/AuthContext';
 import { useRouter } from 'next/router';
+import { query } from 'firebase/firestore';
 
 
 const Agora = ({channelName}) => {
@@ -150,6 +151,8 @@ const Content = ({channelName,username}) => {
    
   },[])
 
+  
+
  
 
   return (
@@ -239,6 +242,7 @@ export const Controls = ({ user }) => {
     setUsers([])
     clearInterval(rtc.current.checkAudio)
     setStart(false)
+    location.href = '/spaces'
   }
 
   useEffect(() => {
@@ -329,7 +333,7 @@ export const Controls = ({ user }) => {
        </div>
       }
       <div className='leave-container'>
-        <div className="unity-flex-child-leave" onClick={() => leaveChannel()}><a href='/spaces'>Leave</a></div>
+        <div className="unity-flex-child-leave" onClick={() => leaveChannel()}>Leave</div>
       </div>
   
       <div className="control-box">

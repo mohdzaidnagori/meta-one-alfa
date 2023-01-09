@@ -1194,19 +1194,60 @@ position: relative;
   font-size: 18px;
 }
 .add-content-container{
-  display: flex;
-  margin-block: 20px;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  width: 100%;
   overflow-y: scroll;
-  font-size: 30px;
-  color: black;
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+}
+@media(max-width:501px){
+  .add-content-container{
+    grid-template-columns: repeat(1,1fr);
+  } 
+}
+@media(min-width:501px) and (max-width:600px){
+  .add-content-container{
+    grid-template-columns: repeat(2,1fr);
+  } 
+}
+@media(min-width:601px) and (max-width:800px){
+  .add-content-container{
+    grid-template-columns: repeat(3,1fr);
+  } 
+}
+@media(min-width:801px) and (max-width:1000px){
+  .add-content-container{
+    grid-template-columns: repeat(4,1fr);
+  } 
+}
+@media(min-width:1001px) and (max-width:1220px){
+  .add-content-container{
+    grid-template-columns: repeat(5,1fr);
+  } 
+}
+@media(min-width:1221px) and (max-width:1340px){
+  .add-content-container{
+    grid-template-columns: repeat(6,1fr);
+  } 
+}
+.image-border-container{
+  height: 200px;
+  position: relative;
+  margin: 10px;
 }
 .imgborder {
   position: relative;
-  width: 190px;
   height: 160px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.image-border-container > p{
+  width: 100%;
+  text-align: center;
+  line-height: 40px;
+  color: black;
+  font-size: 16px;
+  font-weight: 500;
 }
 .sidbarBoxunity{
     display: flex;

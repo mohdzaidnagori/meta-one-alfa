@@ -54,6 +54,7 @@ export const Unitypage = ({children,enviroment}) => {
 //  const [pathType,setPathType] = useState(query.type)
  const [pathName,setPathName] = useState('')
  const [inputName,setInputName] = useState('')
+ const [agoraShow,setAgoraShow] = useState(true)
  const [ismodal,setIsmodal] = useState(false)
  const [pathId,setPathId] = useState('')
  const [agoraUsermodal,setAgoraUsermodal] = useState(false)
@@ -64,7 +65,6 @@ export const Unitypage = ({children,enviroment}) => {
   rotate:'0',
   scale:'0',
  })
- const [joinStream, setjoinStream] = useState(true)
  const [urlData,setUrlData] = useState({})
  const [videoCam ,setVideocam] = useState(false)
  const [copied, setCopied] = useState(false);
@@ -134,7 +134,9 @@ const submitInput = (e) => {
   })
 
 }
-
+const leavehandle = () => {
+        location.href = '/spaces'
+}
  
 
 
@@ -272,9 +274,9 @@ const agoraControl =() => {
           className='sidbarBoxunity sidbarBoxunity-border'>
             <div className="sidebar-container">
               {
-                joinStream ? 
+                agoraShow ?
                 children
-                : ''
+                 : ''
               }
              
             </div>
@@ -295,10 +297,9 @@ const agoraControl =() => {
             <div className="unity-interaction-container">
             <div className="unity-interactions">
                  <div className="unity-leave">
-                 <div className="unity-flex-child-leave">
-                  <a href='/spaces'>
+                 <div className="unity-flex-child-leave" 
+                  onClick={leavehandle}>
                     Leave
-                  </a>
                  </div>
     
                  </div>
@@ -473,6 +474,7 @@ const  ModelLoader = () => {
   const unityData = {id:'5s1l4XbAG5DHtc8UyO51',type:'spaces',}
   const unityJson = JSON.stringify(unityData)
   sendMessage("ModelLoader", "OtherModel", unityJson);
+  sendMessage("FileLoader", "OtherFiles", unityJson);
 
 }
 
@@ -517,8 +519,7 @@ console.log(initialisationError)
   }
   else if(notes[notes.length -1]?.type === 'glb'){
     GlbUploader()
-  }                                                                                                                                                                       
-
+  }   
 if(isLoaded && notes.length === 0){
   CreateAndJoinRooms()
   EnvironmentLoader()
