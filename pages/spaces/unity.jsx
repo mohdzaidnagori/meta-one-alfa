@@ -420,7 +420,7 @@ const agoraControl =() => {
             )
         }
         <div className="unity-scene">
-         {/* {enviroment} */}
+         {enviroment}
 
         </div> 
        
