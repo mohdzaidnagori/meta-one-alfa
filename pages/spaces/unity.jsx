@@ -1,13 +1,13 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { Fragment, useEffect, useState,createRef } from "react"
+import { Fragment, useEffect, useState, createRef } from "react"
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineDeploymentUnit, AiOutlineHeart, AiOutlineLeft, AiOutlineRight, AiOutlineSearch, AiOutlineUserAdd } from "react-icons/ai"
 import { RiCameraFill } from "react-icons/ri"
-import {BsMicMute,BsMic, BsCameraVideo, BsCameraVideoOff, BsShare} from 'react-icons/bs'
-import {GiPauseButton, GiPortal} from 'react-icons/gi'
-import {FiPlay} from 'react-icons/fi'
+import { BsMicMute, BsMic, BsCameraVideo, BsCameraVideoOff, BsShare, BsChat } from 'react-icons/bs'
+import { GiPauseButton, GiPortal } from 'react-icons/gi'
+import { FiPlay } from 'react-icons/fi'
 import { IoExitOutline } from "react-icons/io5"
 import { useAuth } from "../../component/router/AuthContext"
 import { MdAdd, MdEmojiPeople, MdOutlineScreenShare, MdOutlineSpeakerNotes } from "react-icons/md"
@@ -26,6 +26,7 @@ import dynamic from "next/dynamic"
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Agorausermodal from "../../component/unity/Agorausermodal";
+import Chat from "../../component/unity/Chat";
 
 
 // import * as htmlToImage from "html-to-image";
@@ -35,116 +36,117 @@ import Agorausermodal from "../../component/unity/Agorausermodal";
 
 
 
-export const Unitypage = ({children,enviroment}) => {
- const { user } = useAuth()
- const query = useRouter()
+export const Unitypage = ({ children, enviroment }) => {
+  const { user } = useAuth()
+  const query = useRouter()
 
- const [buttons,setButtons] = useState({
-    like:false,
-    mic:false,
-    count:120,
-    play:false,
-    videoCam:true,
-    open:false,
- })
-
-
-
-//  const [pathId,setPathId] = useState(query.Id)
-//  const [pathType,setPathType] = useState(query.type)
- const [pathName,setPathName] = useState('')
- const [inputName,setInputName] = useState('')
- const [agoraShow,setAgoraShow] = useState(true)
- const [ismodal,setIsmodal] = useState(false)
- const [pathId,setPathId] = useState('')
- const [agoraUsermodal,setAgoraUsermodal] = useState(false)
- const [data,setData] = useState({
-  positionX:'0',
-  positionY:'0',
-  positionZ:'0',
-  rotate:'0',
-  scale:'0',
- })
- const [urlData,setUrlData] = useState({})
- const [videoCam ,setVideocam] = useState(false)
- const [copied, setCopied] = useState(false);
+  const [buttons, setButtons] = useState({
+    like: false,
+    mic: false,
+    count: 120,
+    play: false,
+    videoCam: true,
+    open: false,
+  })
 
 
 
-
-
-const isLoaded = true;
+  //  const [pathId,setPathId] = useState(query.Id)
+  //  const [pathType,setPathType] = useState(query.type)
+  const [pathName, setPathName] = useState('')
+  const [inputName, setInputName] = useState('')
+  const [agoraShow, setAgoraShow] = useState(true)
+  const [ismodal, setIsmodal] = useState(false)
+  const [pathId, setPathId] = useState('')
+  const [agoraUsermodal, setAgoraUsermodal] = useState(false)
+  const [showChat, setShowChat] = useState(true)
+  const [data, setData] = useState({
+    positionX: '0',
+    positionY: '0',
+    positionZ: '0',
+    rotate: '0',
+    scale: '0',
+  })
+  const [urlData, setUrlData] = useState({})
+  const [videoCam, setVideocam] = useState(false)
+  const [copied, setCopied] = useState(false);
 
 
 
 
 
- const likeHandle = () => {
-    if(!buttons.like){
-         setButtons(prev =>(
-            {
-             ...prev,
-             count:buttons.count+1,
-             like:true
-            }
-             ))
+  const isLoaded = true;
+
+
+
+
+
+  const likeHandle = () => {
+    if (!buttons.like) {
+      setButtons(prev => (
+        {
+          ...prev,
+          count: buttons.count + 1,
+          like: true
         }
-    else{
-        setButtons(prev =>(
-            {
-             ...prev,
-             count:buttons.count-1,
-             like:false
-            }
-             ))
+      ))
     }
- }
-const micHandle = (type) => {
-    
-    if(type==='mic'){
-      setButtons(prev => ({...prev, mic:!buttons.mic}))
+    else {
+      setButtons(prev => (
+        {
+          ...prev,
+          count: buttons.count - 1,
+          like: false
+        }
+      ))
     }
-    if(type==='video'){
+  }
+  const micHandle = (type) => {
+
+    if (type === 'mic') {
+      setButtons(prev => ({ ...prev, mic: !buttons.mic }))
+    }
+    if (type === 'video') {
       // setButtons(prev => ({...prev, videoCam:!buttons.videoCam}))
       setVideocam(!videoCam)
       // setjoinStream(!joinStream)
     }
-}
-const playHandle = () => {
-    setButtons(prev => ({...prev, play:!buttons.play}))
-} 
-const nameHandle = (e) =>{
-  setInputName(e.target.value)
-}
-const submitInput = (e) => {
-  e.preventDefault()
-  // console.log(inputName)
-  const docRef = doc(db, "spaces", query.query.id);
-  const data = {
-    name: inputName,
-  };
-  
-  setDoc(docRef, data,{ merge:true })
-  .then(docRef => {
-    // console.log(docRef)
-    toast.success('Name Update Succesfuuly')
-  })
-  .catch(error => {
-    toast.error('Unexpected Error');
-  })
+  }
+  const playHandle = () => {
+    setButtons(prev => ({ ...prev, play: !buttons.play }))
+  }
+  const nameHandle = (e) => {
+    setInputName(e.target.value)
+  }
+  const submitInput = (e) => {
+    e.preventDefault()
+    // console.log(inputName)
+    const docRef = doc(db, "spaces", query.query.id);
+    const data = {
+      name: inputName,
+    };
 
-}
-const leavehandle = () => {
-        location.href = '/spaces'
-}
- 
+    setDoc(docRef, data, { merge: true })
+      .then(docRef => {
+        // console.log(docRef)
+        toast.success('Name Update Succesfuuly')
+      })
+      .catch(error => {
+        toast.error('Unexpected Error');
+      })
 
+  }
+  const leavehandle = () => {
+    location.href = '/spaces'
+  }
 
 
 
 
-useEffect( ()=>{
-    if(!query.isReady) return;
+
+
+  useEffect(() => {
+    if (!query.isReady) return;
     setPathName(query.query.name)
     setPathId(query.query.id)
     const dataExists = async () => {
@@ -152,35 +154,35 @@ useEffect( ()=>{
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         //  console.log("Document data:", docSnap.data());
-         setInputName(docSnap.data().name)
+        setInputName(docSnap.data().name)
       } else {
         // doc.data() will be undefined in this case
         // console.log("No such document!");
       }
     }
     dataExists()
-      // .catch(console.error);
-     
-     
+    // .catch(console.error);
+
+
     // codes using router.query
-}, [query.isReady]);
-// const handleTransform = useCallback((posData) => {
-//     // setButtons(prev => ({...prev,open:show === 1 ? true : false}))
-//      const objPosition = {
-//       positionX:JSON.parse(posData).posX,
-//       positionY:JSON.parse(posData).posY,
-//       positionZ:JSON.parse(posData).posZ,
-//       rotate:JSON.parse(posData).posRotate,
-//       scale:JSON.parse(posData).posScale
-//     }
-//     setData(objPosition)
-// },[]);
-// useEffect(() => {
-//   addEventListener("sendTransform", handleTransform);
-//   return () => {
-//     removeEventListener("sendTransform", handleTransform);
-//   };
-// },[handleTransform,addEventListener,removeEventListener])
+  }, [query.isReady]);
+  // const handleTransform = useCallback((posData) => {
+  //     // setButtons(prev => ({...prev,open:show === 1 ? true : false}))
+  //      const objPosition = {
+  //       positionX:JSON.parse(posData).posX,
+  //       positionY:JSON.parse(posData).posY,
+  //       positionZ:JSON.parse(posData).posZ,
+  //       rotate:JSON.parse(posData).posRotate,
+  //       scale:JSON.parse(posData).posScale
+  //     }
+  //     setData(objPosition)
+  // },[]);
+  // useEffect(() => {
+  //   addEventListener("sendTransform", handleTransform);
+  //   return () => {
+  //     removeEventListener("sendTransform", handleTransform);
+  //   };
+  // },[handleTransform,addEventListener,removeEventListener])
 
 
 
@@ -189,243 +191,250 @@ useEffect( ()=>{
 
 
 
-const openModal = () => {
-  setIsmodal(!ismodal)
-}
-const closedModalsidebar = (check) => {
-  if(check === 'openPosition'){
-    setButtons(prev =>(
-      {
-       ...prev,
-       open:false
-      }
-       ))
+  const openModal = () => {
+    setIsmodal(!ismodal)
   }
-  if(check === 'openVideo'){
-    // setButtons(prev =>(
-    //   {
-    //    ...prev,
-    //    videoCam:false
-    //   }
-    //    ))
-    setVideocam(false)
+  const closedModalsidebar = (check) => {
+    if (check === 'openPosition') {
+      setButtons(prev => (
+        {
+          ...prev,
+          open: false
+        }
+      ))
+    }
+    if (check === 'openVideo') {
+      // setButtons(prev =>(
+      //   {
+      //    ...prev,
+      //    videoCam:false
+      //   }
+      //    ))
+      setVideocam(false)
+    }
+
   }
-  
-}
-const searchhandle = () => {
-  
-}
-const sidebarVariants = {
-  sidebarOpen: {
-    width: "350px",
-  },
+  const searchhandle = () => {
 
-  sidebarClosed: {
-    width: "",
-  },
-};
+  }
+  const sidebarVariants = {
+    sidebarOpen: {
+      width: "350px",
+    },
 
-function copy() {
-  const el = document.createElement("input");
-  el.value = window.location.href;
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand("copy");
-  document.body.removeChild(el);
-  setCopied(true);
-}
-// const createFileName = (extension = "", ...names) => {
-//   if (!extension) {
-//     return "";
-//   }
+    sidebarClosed: {
+      width: "",
+    },
+  };
 
-//   return `${names.join("")}.${extension}`;
-// };
-// const ref = createRef(null);
+  function copy() {
+    const el = document.createElement("input");
+    el.value = window.location.href;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+    setCopied(true);
+  }
+  // const createFileName = (extension = "", ...names) => {
+  //   if (!extension) {
+  //     return "";
+  //   }
 
-// const takeScreenShot = async (node) => {
-//   const dataURI = await htmlToImage.toJpeg(node);
-//   return dataURI;
-// };
+  //   return `${names.join("")}.${extension}`;
+  // };
+  // const ref = createRef(null);
 
-// const download = (image, { name = "img", extension = "jpg" } = {}) => {
-//   const a = document.createElement("a");
-//   a.href = image;
-//   a.download = createFileName(extension, name);
-//   a.click();
-// };
+  // const takeScreenShot = async (node) => {
+  //   const dataURI = await htmlToImage.toJpeg(node);
+  //   return dataURI;
+  // };
 
-// const downloadScreenshot = () => takeScreenShot(ref.current).then(download);
-const agoraControl =() => {
-  setAgoraUsermodal(!agoraUsermodal)
-}
+  // const download = (image, { name = "img", extension = "jpg" } = {}) => {
+  //   const a = document.createElement("a");
+  //   a.href = image;
+  //   a.download = createFileName(extension, name);
+  //   a.click();
+  // };
+
+  // const downloadScreenshot = () => takeScreenShot(ref.current).then(download);
+  const agoraControl = () => {
+    setAgoraUsermodal(!agoraUsermodal)
+  }
+  const chatHandle = () => {
+    setShowChat(false)
+  }
 
 
   return (
     <div className="unity-scene-spaces">
-    <Toaster />
-        <div className='SidebarBox-unity'>
+  
+      <Toaster />
+      <div className='SidebarBox-unity'>
         {/* <Sidabarunity sendMessage={sendMessage}  data={data}   open={buttons.open} closedModal={() => closedModalsidebar('openPosition')} /> */}
-        </div>
-        <div className='SidebarBox-unity-top-left'>
-      <motion.div 
+      </div>
+      <div className='SidebarBox-unity-top-right'>
+      <Chat open={showChat} close={chatHandle} />
+      </div>
+      <div className='SidebarBox-unity-top-left'>
+        <motion.div
           variants={sidebarVariants}
           animate={videoCam ? "sidebarOpen" : "sidebarClosed"}
           className='sidbarBoxunity sidbarBoxunity-border'>
-            <div className="sidebar-container">
-              {
-                agoraShow ?
+          <div className="sidebar-container">
+            {
+              agoraShow ?
                 children
-                 : ''
-              }
-             
-            </div>
-         <div className="sidebar-container">
-           <div className="sidebar-button-submit">
-             <button onClick={() => closedModalsidebar('openVideo')} className="sidebar-button">done</button>
-           </div>
-         </div>
-      </motion.div> 
-        {/* <VideoSidebar  username={pathName} pathId={pathId} open={buttons.videoCam} closedModal={() => closedModalsidebar('openVideo')} /> */}
-         </div>
-      {ismodal && 
-       <div className="newSpace">
-        <Addcontent action={openModal} Urldata={(urlData) =>  setUrlData(urlData)} spaceId={query.query.id} />
-      </div> }  
-        {
-           isLoaded && (
-            <div className="unity-interaction-container">
-            <div className="unity-interactions">
-                 <div className="unity-leave">
-                 <div className="unity-flex-child-leave" 
-                  onClick={leavehandle}>
-                    Leave
-                 </div>
-    
-                 </div>
-               
-                <div className="unity-people">
-                  <div className="unity-flex-child">
-                  <div className="unity-people-after" style=
-                  {{
-                    width:query.query.type === 'explore' ? 'max-content' : '100%'
-                  }}>
-                     {
-                       query.query.type === 'spaces' ?
-             
-                     
-                       <form onSubmit={submitInput}>
-                         <input
-                      style={{ width: `${inputName.length}ch`,textAlign:'center'}}
-                      onChange={nameHandle}
-                       value={inputName}
-                       type="text"
-                       /> 
-                       </form>
+                : ''
+            }
 
-                       :query.query.name
+          </div>
+          <div className="sidebar-container">
+            <div className="sidebar-button-submit">
+              <button onClick={() => closedModalsidebar('openVideo')} className="sidebar-button">done</button>
+            </div>
+          </div>
+        </motion.div>
+        {/* <VideoSidebar  username={pathName} pathId={pathId} open={buttons.videoCam} closedModal={() => closedModalsidebar('openVideo')} /> */}
+      </div>
+      {ismodal &&
+        <div className="newSpace">
+          <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
+        </div>}
+      {
+        isLoaded && (
+          <div className="unity-interaction-container">
+            <div className="unity-interactions">
+              <div className="unity-leave">
+                <div className="unity-flex-child-leave"
+                  onClick={leavehandle}>
+                  Leave
+                </div>
+
+              </div>
+
+              <div className="unity-people">
+                <div className="unity-flex-child">
+                  <div className="unity-people-after" style=
+                    {{
+                      width: query.query.type === 'explore' ? 'max-content' : '100%'
+                    }}>
+                    {
+                      query.query.type === 'spaces' ?
+
+
+                        <form onSubmit={submitInput}>
+                          <input
+                            style={{ width: `${inputName.length}ch`, textAlign: 'center' }}
+                            onChange={nameHandle}
+                            value={inputName}
+                            type="text"
+                          />
+                        </form>
+
+                        : query.query.name
                     }
                     {
-                        query.query.type === 'spaces' &&
-                       <span className="unity-people-pencil" style={{width: `${inputName.length}ch`}}><BiPencil /></span>
+                      query.query.type === 'spaces' &&
+                      <span className="unity-people-pencil" style={{ width: `${inputName.length}ch` }}><BiPencil /></span>
                     }
-                   
-                     
+
+
                   </div>
-                  
-                 
+
+
                   <div className="bg-info rounded-circle image-space unity-avatar-border" onClick={agoraControl}>
                     {
                       user.photoUrl ?
-                      <Image className="space-avtar-img" src={user.photoUrl}  priority={true} layout='fill' alt="avatarImages"/>
-                      :
-                      <Image src='/images/login-images/thumbnail.png'  priority={true} layout='fill'  alt="thumbnailImages" />
+                        <Image className="space-avtar-img" src={user.photoUrl} priority={true} layout='fill' alt="avatarImages" />
+                        :
+                        <Image src='/images/login-images/thumbnail.png' priority={true} layout='fill' alt="thumbnailImages" />
                     }
                   </div>
-                  </div>  
-                  {
-                    agoraUsermodal &&   <Agorausermodal close={agoraControl}  />
-                  }
                 </div>
-                <div className="unity-like">
-                  <div className="unity-flex-child">
-                      <div className="like">
-                         <span className={buttons.like ? "like-red" : ''} onClick={likeHandle}>
-                            {
-                              buttons.like ? <AiFillHeart/> : <AiOutlineHeart /> 
-                            }
-                         </span> {buttons.count}
-                      </div>
-                      <div  className="camera">
-                        <RiCameraFill />
-                      </div>
-                      <div onClick={copy} style={{fontSize:'17px'}} className="camera unity-hover" data-name={!copied ? "Copy link" : "Copied!"} >
-                        <BsShare />
-                      </div>
-                  </div> 
+                {
+                  agoraUsermodal && <Agorausermodal close={agoraControl} />
+                }
+              </div>
+              <div className="unity-like">
+                <div className="unity-flex-child">
+                  <div className="like">
+                    <span className={buttons.like ? "like-red" : ''} onClick={likeHandle}>
+                      {
+                        buttons.like ? <AiFillHeart /> : <AiOutlineHeart />
+                      }
+                    </span> {buttons.count}
+                  </div>
+                  <div className="camera">
+                    <RiCameraFill />
+                  </div>
+                  <div onClick={copy} style={{ fontSize: '17px' }} className="camera unity-hover" data-name={!copied ? "Copy link" : "Copied!"} >
+                    <BsShare />
+                  </div>
                 </div>
-            </div>
-          
-            <div className="unity-interactions">
-            <div className="unity-leave" onClick={() => micHandle('video')}>
-            <div className="unity-flex-child">
-            <span>Stream</span> <span className="exit-rotate-unity"><AiOutlineDeploymentUnit /> </span> 
-                </div>
-              {/* <div onClick={() => micHandle('video')} data-name={buttons.videoCam ? 'Turn of camera' : 'Turn on camera'} className="unity-flex-child unity-hover">
-              { videoCam ?  <BsCameraVideo /> :<BsCameraVideoOff/> }
-              </div>  */}
-            </div>
-            <div className="unity-control">
-             {
-              query.query.type === 'explore' ? 
-              <div className="unity-flex-child">
-              <span><AiOutlineLeft /></span>
-              <span className="unity-play" onClick={playHandle}>
-              {
-                 buttons.play
-                 ? 
-                 <GiPauseButton />
-                 :
-                 <FiPlay/>
-              }
-              </span>
-              <span><AiOutlineRight /></span>
-           </div>
-           : <div className="unity-bottom-center-flex">
-            <div
-            onClick={() => setButtons(prev =>(
-              {
-               ...prev,
-               open:!buttons.open
-              }
-               ))
-             }
-             className="unity-bottom-center unity-hover" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
-             <div onClick={searchhandle} className="unity-bottom-center unity-hover" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
-             <div onClick={openModal} className="unity-bottom-center unity-hover" data-name="Add content" style={{backgroundColor:'#28f'}}><MdAdd /></div>
-             <div className="unity-bottom-center unity-hover" data-name="Add portal Coming soon"><GiPortal /></div>
-             <div className="unity-bottom-center unity-hover" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
-           </div>
-             }
-            </div>
-            <div className="unity-help">
-              <div className="unity-flex-child">
-                 <span><MdEmojiPeople /></span>
-                 <span><BiHelpCircle /></span>
-                 <span><BiDotsHorizontalRounded /></span>
               </div>
             </div>
-            </div>
-        </div>
-            )
-        }
-        <div className="unity-scene">
-         {enviroment}
 
-        </div> 
-       
+            <div className="unity-interactions">
+              <div className="unity-leave" onClick={() => micHandle('video')}>
+                <div className="unity-flex-child">
+                  <span>Stream</span> <span className="exit-rotate-unity"><AiOutlineDeploymentUnit /> </span>
+                </div>
+                {/* <div onClick={() => micHandle('video')} data-name={buttons.videoCam ? 'Turn of camera' : 'Turn on camera'} className="unity-flex-child unity-hover">
+              { videoCam ?  <BsCameraVideo /> :<BsCameraVideoOff/> }
+              </div>  */}
+              </div>
+              <div className="unity-control">
+                {
+                  query.query.type === 'explore' ?
+                    <div className="unity-flex-child">
+                      <span><AiOutlineLeft /></span>
+                      <span className="unity-play" onClick={playHandle}>
+                        {
+                          buttons.play
+                            ?
+                            <GiPauseButton />
+                            :
+                            <FiPlay />
+                        }
+                      </span>
+                      <span><AiOutlineRight /></span>
+                    </div>
+                    : <div className="unity-bottom-center-flex">
+                      <div
+                        onClick={() => setButtons(prev => (
+                          {
+                            ...prev,
+                            open: !buttons.open
+                          }
+                        ))
+                        }
+                        className="unity-bottom-center unity-hover" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
+                      <div onClick={searchhandle} className="unity-bottom-center unity-hover" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
+                      <div onClick={openModal} className="unity-bottom-center unity-hover" data-name="Add content" style={{ backgroundColor: '#28f' }}><MdAdd /></div>
+                      <div className="unity-bottom-center unity-hover" data-name="Add portal Coming soon"><GiPortal /></div>
+                      <div className="unity-bottom-center unity-hover" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
+                    </div>
+                }
+              </div>
+              <div className="unity-help">
+                <div className="unity-flex-child">
+                  <span><MdEmojiPeople /></span>
+                  <div onClick={() => setShowChat(true)} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat /></div>
+                  <span><BiDotsHorizontalRounded /></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+      <div className="unity-scene">
+        {/* {enviroment} */}
+
+      </div>
+
     </div>
-  
+
   )
 }
 export const UnityEnviroment = () => {
@@ -433,99 +442,99 @@ export const UnityEnviroment = () => {
   const dispatch = useDispatch()
   const { user } = useAuth()
   const query = useRouter()
- const {
-  unityProvider,
-  sendMessage,
-  loadingProgression,
-  isLoaded,
-  initialisationError,
-  takeScreenshot,
-  addEventListener,
-  removeEventListener
- } = useUnityContext({
-  loaderUrl: "/Build/Build.loader.js",
-  dataUrl: "/Build/Build.data",
-  frameworkUrl: "/Build/Build.framework.js",
-  codeUrl: "/Build/Build.wasm",
-  webglContextAttributes: {
-    preserveDrawingBuffer: false,
-  },
-  cacheControl: handleCacheControl,
-});
-const loading = Math.round(loadingProgression * 100)
+  const {
+    unityProvider,
+    sendMessage,
+    loadingProgression,
+    isLoaded,
+    initialisationError,
+    takeScreenshot,
+    addEventListener,
+    removeEventListener
+  } = useUnityContext({
+    loaderUrl: "/Build/Build.loader.js",
+    dataUrl: "/Build/Build.data",
+    frameworkUrl: "/Build/Build.framework.js",
+    codeUrl: "/Build/Build.wasm",
+    webglContextAttributes: {
+      preserveDrawingBuffer: false,
+    },
+    cacheControl: handleCacheControl,
+  });
+  const loading = Math.round(loadingProgression * 100)
 
 
 
-const EnvironmentLoader = () => {
-  const unityData = {id:query.query.sceneId,type:'spaces'}
-  const unityJson = JSON.stringify(unityData)
-  console.log(unityJson)
-  sendMessage("EnvironmentLoader", "MainModel", unityJson);
-}
-function handleCacheControl(url) {
-  console.log(`Cache control for ${url}`);
-  return "no-cache";
-}
+  const EnvironmentLoader = () => {
+    const unityData = { id: query.query.sceneId, type: 'spaces' }
+    const unityJson = JSON.stringify(unityData)
+    console.log(unityJson)
+    sendMessage("EnvironmentLoader", "MainModel", unityJson);
+  }
+  function handleCacheControl(url) {
+    console.log(`Cache control for ${url}`);
+    return "no-cache";
+  }
 
 
 
 
-const  ModelLoader = () => {
-  const unityData = {id:'5s1l4XbAG5DHtc8UyO51',type:'spaces',}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("ModelLoader", "OtherModel", unityJson);
-  sendMessage("FileLoader", "OtherFiles", unityJson);
+  const ModelLoader = () => {
+    const unityData = { id: '5s1l4XbAG5DHtc8UyO51', type: 'spaces', }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("ModelLoader", "OtherModel", unityJson);
+    sendMessage("FileLoader", "OtherFiles", unityJson);
 
-}
-
-
-const  CreateAndJoinRooms = () => {
-  const unityData = {roomName:query.query.id,playerName:user.displayName,}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
-}
+  }
 
 
-// // GameObject And Class Name : ImageLoader / Function Name : ImgLoader
-
-const ImageUploader = () => {
-  const unityData = {id:notes[notes.length -1]?.id,url:notes[notes.length -1]?.url}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("ImageLoader", "ImgLoader", unityJson);
-  console.log('image uploader')
-}
-const VideoUploader = () => {
-  const unityData = {id:notes[notes.length -1]?.id,url:notes[notes.length -1]?.url}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("VideoLoad", "VideoLoader", unityJson);
-  console.log('video uploader')
-}
-const GlbUploader = () =>{
-  const unityData = {id:notes[notes.length -1]?.id,url:notes[notes.length -1]?.url}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("UploadedModelLoader", "UplodedModel", unityJson);
-  console.log('glb uploader')
-}
-
-console.log(initialisationError)
+  const CreateAndJoinRooms = () => {
+    const unityData = { roomName: query.query.id, playerName: user.displayName, }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
+  }
 
 
-//   console.log('unity running')
-  if(notes[notes.length -1]?.type === 'img'){
+  // // GameObject And Class Name : ImageLoader / Function Name : ImgLoader
+
+  const ImageUploader = () => {
+    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("ImageLoader", "ImgLoader", unityJson);
+    console.log('image uploader')
+  }
+  const VideoUploader = () => {
+    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("VideoLoad", "VideoLoader", unityJson);
+    console.log('video uploader')
+  }
+  const GlbUploader = () => {
+    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("UploadedModelLoader", "UplodedModel", unityJson);
+    console.log('glb uploader')
+  }
+
+  console.log(initialisationError)
+
+
+  //   console.log('unity running')
+  if (notes[notes.length - 1]?.type === 'img') {
     ImageUploader()
   }
-  else if(notes[notes.length -1]?.type === 'video'){
+  else if (notes[notes.length - 1]?.type === 'video') {
     VideoUploader()
   }
-  else if(notes[notes.length -1]?.type === 'glb'){
+  else if (notes[notes.length - 1]?.type === 'glb') {
     GlbUploader()
-  }   
-if(isLoaded && notes.length === 0){
-  CreateAndJoinRooms()
-  EnvironmentLoader()
-  ModelLoader()
-  
-}
+  }
+  if (isLoaded && notes.length === 0) {
+    CreateAndJoinRooms()
+    EnvironmentLoader()
+    ModelLoader()
+
+  }
 
 
 
@@ -535,35 +544,35 @@ if(isLoaded && notes.length === 0){
 
 
 
-return (
-  <Fragment>
-  {!isLoaded && (
-        <Unityloader loading={loading} envirometname={query.query.name}  />
-         )}
-        
-        < Unity
+  return (
+    <Fragment>
+      {!isLoaded && (
+        <Unityloader loading={loading} envirometname={query.query.name} />
+      )}
+
+      < Unity
         unityProvider={unityProvider}
-        style={{ visibility: isLoaded ? "visible" : "hidden",width:'100%',height:'100%',overflow:'hidden' }}
-        />
-  </Fragment>
-)
+        style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
+      />
+    </Fragment>
+  )
 }
 
 const Wrapper = () => {
-  const App = dynamic(import('../../component/video-call/Agora'), { ssr:false });
+  const App = dynamic(import('../../component/video-call/Agora'), { ssr: false });
   const query = useRouter()
   const AppMemo = memo(App);
   const UnityEnviromentMemo = memo(UnityEnviroment)
 
 
 
-return (
-<Unitypage enviroment={<UnityEnviromentMemo />} >
-  <AppMemo channelName={query.query.id} />
-</Unitypage>
-)
-   
-    
+  return (
+    <Unitypage enviroment={<UnityEnviromentMemo />} >
+      <AppMemo channelName={query.query.id} />
+    </Unitypage>
+  )
+
+
 
 }
 export default Wrapper

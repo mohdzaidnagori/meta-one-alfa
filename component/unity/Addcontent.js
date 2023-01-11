@@ -153,11 +153,11 @@ const Addcontent = ({action,spaceId,Urldata}) => {
             data.append('file',files)
             data.append('spaceId',spaceId)
             data.append('name',files.name)
-            data.append('position',"{x:0.y:0.z:0}")
-            data.append('rotation','{x:0.y:0.z:0}')
-            data.append('scale','{x:1.y:1.z:1}')
+            data.append('position',JSON.stringify([0,0,0]))
+            data.append('rotation',JSON.stringify([0,0,0]))
+            data.append('scale',JSON.stringify([1,1,1]))
             data.append('type','images')
-             console.log('add files')
+             console.log(data)
 
              await axios.post(url,data,{
                   headers: {
@@ -181,11 +181,12 @@ const Addcontent = ({action,spaceId,Urldata}) => {
           data.append('file',files)
           data.append('spaceId',spaceId)
           data.append('name',files.name)
-          data.append('position',"{x:0.y:0.z:0}")
-          data.append('rotation','{x:0.y:0.z:0}')
-          data.append('scale','{x:1.y:1.z:1}')
+          data.append('position',JSON.stringify([0,0,0]))
+          data.append('rotation',JSON.stringify([0,0,0]))
+          data.append('scale',JSON.stringify([1,1,1]))
           data.append('type','video')
-           console.log('add files')
+           console.log(data)
+           
 
            await axios.post(url,data,{
                 headers: {
