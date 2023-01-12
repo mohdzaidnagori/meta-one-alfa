@@ -15,6 +15,7 @@ body {
     -ms-user-select: none;
     user-select: none;
     background-color: #fff !important;
+    scroll-behavior: smooth;
 }
 :root{
   --emo-in-out: cubic-bezier(0.4,0,0.2,1);

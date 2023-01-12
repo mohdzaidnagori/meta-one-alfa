@@ -200,7 +200,7 @@ export const Video = ({ user }) => {
   const vidDiv = useRef(null)
   const playVideo = () => {
     if (user.video) {
-      user.videoTrack.play(vidDiv.current)
+      user.videoTrack?.play(vidDiv.current)
     }
   }
 
