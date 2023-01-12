@@ -59,7 +59,7 @@ export const Unitypage = ({ children, enviroment }) => {
   const [ismodal, setIsmodal] = useState(false)
   const [pathId, setPathId] = useState('')
   const [agoraUsermodal, setAgoraUsermodal] = useState(false)
-  const [showChat, setShowChat] = useState(true)
+  const [showChat, setShowChat] = useState(false)
   const [data, setData] = useState({
     positionX: '0',
     positionY: '0',
@@ -429,7 +429,7 @@ export const Unitypage = ({ children, enviroment }) => {
         )
       }
       <div className="unity-scene">
-        {/* {enviroment} */}
+        {enviroment}
 
       </div>
 
