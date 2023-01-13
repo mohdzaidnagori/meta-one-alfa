@@ -274,6 +274,7 @@ position: relative;
   height: 240px;
   border-radius: 15px;
   overflow: hidden;
+  cursor: pointer;
 }
 .box-height-small{
   position: relative;
@@ -347,6 +348,7 @@ position: relative;
      border-radius: 30px;
      background-color: #fff;
      color: #000;
+     cursor: pointer;
      
 }
 .image-space{
@@ -449,7 +451,7 @@ position: relative;
   display: flex;
   border-radius: 45px;
   border: 1px solid rgba(0,0,0,.25);
- 
+ cursor: pointer;
 }
 .spaces-explore-button{
  flex: 0.5;
@@ -635,6 +637,7 @@ position: relative;
   justify-content: center;
   align-items: center;
   font-size: 16px;
+  cursor: pointer;
 }
 .space-add-icons{
   font-weight: bold;
@@ -707,6 +710,7 @@ position: relative;
   font-weight: 600;
   color: #888;
   transition: ease all 0.3s;
+  cursor: pointer;
 }
 .space-modal-left-mover .newSpace-switch > p:hover{
   color: #000;
@@ -732,6 +736,7 @@ position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .newSpacesCard-height > span {
@@ -1836,6 +1841,7 @@ input[type=range]::-webkit-slider-runnable-track {
   background-color: transparent;
   color: #000;
   margin-left: 20px;
+  z-index: 9999;
 }
 .chat-input-box > span{
   flex: 0.2;
@@ -1895,6 +1901,10 @@ input[type=range]::-webkit-slider-runnable-track {
   padding: 10px 20px;
   color: #fff;
   border-radius: 20px;
+  overflow-wrap: anywhere;
+  -webkit-user-select:text;
+  -ms-user-select: text;
+  user-select: text; 
 }
 .chat-msg-box .msg-box p{
   padding: 2px 0px;
@@ -1907,12 +1917,7 @@ input[type=range]::-webkit-slider-runnable-track {
 .chat-msg-user{
   color: rgb(121, 255, 103);
 }
-.msg-box-right{
 
-}
-.msg-box-right{
-
-}
 
 
 /* slug space style  */
