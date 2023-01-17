@@ -10,10 +10,12 @@ import { BiTime } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import Image from 'next/image';
+import { SiUnity } from "react-icons/si";
 
 const Addcontent = ({action,spaceId,Urldata}) => {
     const [ToggleState, setToggleState] = useState(1);
     const [showFileData,setShowFileData] = useState(null)
+    const [showObjData,setShowObjData] = useState(null)
     const router = useRouter()
     const toggleTab = (index) => {
       setToggleState(index);
@@ -146,8 +148,16 @@ const Addcontent = ({action,spaceId,Urldata}) => {
       const onUpload =  async (files) => {
         var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.svg)$/i;
         var allowedExtensionsvideo = /(\.mp4|\.mkv)$/i;
+        var allowedExtensionsobj = /(\.glb)$/i;
+        const modalLoader = {
+              id:'loading',
+              url:'loading',
+              type:'loading'
+            }
+            dispatch(AddNote(modalLoader));
         if(allowedExtensions.exec(files.name)){
             toast.success('image uploading...')
+            dispatch(DeleteNote())
             const url = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/addSpaceFiles`
             const data = new FormData()
             data.append('file',files)
@@ -166,6 +176,13 @@ const Addcontent = ({action,spaceId,Urldata}) => {
               })
               .then((response) => {
                 toast.success('successfully image upload')
+                dispatch(DeleteNote())
+                const modalImg = {
+                  id:response.data.id,
+                  url:response.data.url,
+                  type:'img'
+                }
+                dispatch(AddNote(modalImg));
                 console.log(response)
               })
               .catch((error) => {
@@ -195,27 +212,75 @@ const Addcontent = ({action,spaceId,Urldata}) => {
             })
             .then((response) => {
               toast.success('successfully video upload')
+              dispatch(DeleteNote())
+              const modalVideo = {
+                  id:response.data.id,
+                  url:response.data.url,
+                  type:'video'
+                }
+                dispatch(AddNote(modalVideo));
               console.log(response)
             })
             .catch((error) => {
               toast.error('enexpected error' +error)
             })
         }
-      }
+        else if(allowedExtensionsobj.exec(files.name)){
+          toast.success('modal uploading...')
+          dispatch(DeleteNote())
+          const url = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/addSpaceObject`
+            const data = new FormData()
+            data.append('file',files)
+            data.append('spaceId',spaceId)
+            data.append('name',files.name)
+            data.append('position',"{x:0.y:0.z:0}")
+            data.append('rotation','{x:0.y:0.z:0}')
+            data.append('scale','{x:1.y:1.z:1}')
+            data.append('type','modal')
+            
+            await axios.post(url,data,{
+              headers: {
+                'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(function (response) {
+                //handle success
+               toast.success('successfully modal upload')
+               console.log(response)
+           
+              const modalGlb = {
+                id:response.data.id,
+                url:response.data.url,
+                type:'glb'
+              }
+              dispatch(AddNote(modalGlb));
+               
+              })
+              .catch(function (response) {
+                //handle error
+                toast.error('enexpected error' +response)
+              });
+            
+        }
+    }
 
 
       const formats = ['txt','jpg','png','glb']
 
       const fileGetUrl = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/getSpaceFiles/${router.query.id}/${router.query.type}`
+      const objGetUrl = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/getSpaceObjects/${router.query.id}/${router.query.type}`
 
       useEffect(() => {
         axios.get(fileGetUrl).then((response) => {
           setShowFileData(response.data);
         });
+        axios.get(objGetUrl).then((response) => {
+          setShowObjData(response.data);
+        });
       }, []);
-     
-  console.log(showFileData)
+ const allData = showFileData?.concat(showObjData)
 
+  
   return (
     <>
     <Toaster />
@@ -235,9 +300,40 @@ const Addcontent = ({action,spaceId,Urldata}) => {
     <div className='add-tabs-area-container'>
        <div className={`content ${getActiveClass(1,'active-content')}`}>
         <div className="add-content-container">
-          coming soon <span style={{marginLeft:'10px'}}><BiTime /></span>
+        {
+            allData?.map((item) => {
+              return (
+               <div className="image-border-container">
+                 <div className="imgborder" key={item?.url}>
+                  {
+                    item?.type === 'images'
+                    ?
+                    <Image src={item?.url}  layout="fill" quality={100} />
+                    :
+                    item?.type === 'video'
+                    ?
+                    <video muted  controls style={{width:'100%',height:'100%'}}>
+                      <source src={item?.url} />
+                    </video>
+                    :
+                    <div className="unity-3d-icon">
+                    <SiUnity />
+                    </div>
+                    
+                  }
+                  
+                </div>
+                {
+                  item?.name.length > 13 ? 
+                 <p>{item?.name.substring(0,13)}...</p> :  <p>{item?.name}</p>
+                }
+               </div>
+              )
+            })
+           }
         </div>
        </div>
+
        <div className={`content ${getActiveClass(2,'active-content')}`}>
         <div className="add-content-container">
            {
@@ -246,19 +342,19 @@ const Addcontent = ({action,spaceId,Urldata}) => {
                <div className="image-border-container">
                  <div className="imgborder" key={item.url}>
                   {
-                    item.type === 'images'
+                    item?.type === 'images'
                     ?
-                    <Image src={item.url}  layout="fill" quality={100} />
+                    <Image src={item?.url}  layout="fill" quality={100} />
                     :
                     <video muted  controls style={{width:'100%',height:'100%'}}>
-                      <source src={item.url} />
+                      <source src={item?.url} />
                     </video>
                   }
                   
                 </div>
                 {
-                        item.name.length > 13 ? 
-                        <p>{item.name.substring(0,13)}...</p> :  <p>{item.name}</p>
+                        item?.name.length > 13 ? 
+                        <p>{item?.name.substring(0,13)}...</p> :  <p>{item?.name}</p>
                 }
                </div>
               )
@@ -270,7 +366,23 @@ const Addcontent = ({action,spaceId,Urldata}) => {
        </div>
        <div className={`content ${getActiveClass(3,'active-content')}`}>
         <div className="add-content-container">
-          coming soon <span style={{marginLeft:'10px'}}><BiTime /></span>
+        {
+            showObjData?.map((item) => {
+              return (
+               <div className="image-border-container">
+                 <div className="imgborder" key={item.url}>
+                  <div className="unity-3d-icon">
+                  <SiUnity />
+                  </div>
+                </div>
+                {
+                        item?.name.length > 13 ? 
+                        <p>{item?.name.substring(0,13)}...</p> :  <p>{item?.name}</p>
+                }
+               </div>
+              )
+            })
+           }
         </div>
        </div>
        <div className={`content ${getActiveClass(4,'active-content')}`}>

@@ -27,6 +27,7 @@ import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Agorausermodal from "../../component/unity/Agorausermodal";
 import Chat from "../../component/unity/Chat";
+import { saveAs } from 'file-saver'
 
 
 // import * as htmlToImage from "html-to-image";
@@ -429,7 +430,7 @@ export const Unitypage = ({ children, enviroment }) => {
         )
       }
       <div className="unity-scene">
-        {/* {enviroment} */}
+        {enviroment}
 
       </div>
 
@@ -439,6 +440,9 @@ export const Unitypage = ({ children, enviroment }) => {
 }
 export const UnityEnviroment = () => {
   const notes = useSelector((state) => state.notes.notes);
+  const [devicePixelRatio, setDevicePixelRatio] = useState(
+    window.devicePixelRatio
+  );
   const dispatch = useDispatch()
   const { user } = useAuth()
   const query = useRouter()
@@ -450,19 +454,46 @@ export const UnityEnviroment = () => {
     initialisationError,
     takeScreenshot,
     addEventListener,
-    removeEventListener
+    removeEventListener,
+    requestPointerLock
   } = useUnityContext({
     loaderUrl: "/Build/Build.loader.js",
     dataUrl: "/Build/Build.data",
     frameworkUrl: "/Build/Build.framework.js",
     codeUrl: "/Build/Build.wasm",
     webglContextAttributes: {
-      preserveDrawingBuffer: false,
+      preserveDrawingBuffer: true,
     },
     cacheControl: handleCacheControl,
   });
+  const handleChangePixelRatio = useCallback(
+    function () {
+      // A function which will update the device pixel ratio of the Unity
+      // Application to match the device pixel ratio of the browser.
+      const updateDevicePixelRatio = function () {
+        setDevicePixelRatio(window.devicePixelRatio);
+      };
+      // A media matcher which watches for changes in the device pixel ratio.
+      const mediaMatcher = window.matchMedia(
+        `screen and (resolution: ${devicePixelRatio}dppx)`
+      );
+      // Adding an event listener to the media matcher which will update the
+      // device pixel ratio of the Unity Application when the device pixel
+      // ratio changes.
+      mediaMatcher.addEventListener("change", updateDevicePixelRatio);
+      return function () {
+        // Removing the event listener when the component unmounts.
+        mediaMatcher.removeEventListener("change", updateDevicePixelRatio);
+      };
+    },
+    [devicePixelRatio]
+  );
   const loading = Math.round(loadingProgression * 100)
-
+  function handleClick() {
+    const dataUrl = takeScreenshot("image/jpg", 1.0);
+    saveAs(dataUrl, 'image.jpg') // Put your image url here.
+    console.log('ok')
+  }
 
 
   const EnvironmentLoader = () => {
@@ -536,7 +567,7 @@ export const UnityEnviroment = () => {
 
   }
 
-
+console.log(devicePixelRatio)
 
 
 
@@ -546,14 +577,17 @@ export const UnityEnviroment = () => {
 
   return (
     <Fragment>
-      {!isLoaded && (
+      {/* {!isLoaded && (
         <Unityloader loading={loading} envirometname={query.query.name} />
       )}
 
       < Unity
         unityProvider={unityProvider}
+        tabIndex={1}
+        // devicePixelRatio={devicePixelRatio}
         style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
       />
+      <div style={{position:'absolute',top:'0',left:'0',zIndex:'9999'}} onClick={handleClick}>Lock Pointer</div>; */}
     </Fragment>
   )
 }

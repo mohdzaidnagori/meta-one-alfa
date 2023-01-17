@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from "framer-motion";
 import { MdOutlineKeyboardBackspace, } from 'react-icons/md';
 import Image from 'next/image';
-import { addDoc, collection, getDocs, onSnapshot,orderBy, serverTimestamp, Timestamp, where } from "firebase/firestore"; 
+import { addDoc, collection, getDocs, limitToLast, onSnapshot,orderBy, serverTimestamp, Timestamp, where } from "firebase/firestore"; 
 import { query as fireQuery } from "firebase/firestore";
 
 import { useAuth } from '../router/AuthContext';
@@ -60,7 +60,7 @@ const Chat = ({ open, close }) => {
   }
 useEffect(() => {
   ref.current.scrollTo({
-    top:document.documentElement.scrollHeight * 10,
+    top:document.documentElement.scrollHeight * 50,
     behavior: 'smooth',
   });
 },[getData])
@@ -68,7 +68,7 @@ useEffect(() => {
     if (!query.isReady) return;
     console.log(query.isReady)
     const spacehandle = async () => {
-      const q = fireQuery(collection(db, "chats"), where("spaceId", "==", query.query.id),orderBy("timestamp","asc"));
+      const q = fireQuery(collection(db, "chats"), where("spaceId", "==", query.query.id),orderBy("timestamp","asc"),limitToLast(50));
       const unsub = onSnapshot(
         q,
       (snapShot) => {
@@ -101,6 +101,12 @@ useEffect(() => {
     let myTime = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     return myDate + " " + myTime
     }
+    const handleKeypress = e => {
+      //it triggers by pressing the enter key
+    if (e.keyCode === 13) {
+      handleSubmit();
+    }
+  };
   return (
     <>
         <AnimatePresence>
@@ -119,7 +125,11 @@ useEffect(() => {
           </div>
           <div  className="bg-info rounded-circle image-space" style={{border:'2px solid #fff'}}>
               {
-                 <Image src={user.photoUrl}  priority={true} layout='fill'  alt="thumbnailImages" />
+                 <Image src={user.photoUrl} 
+                  priority={true}
+                  layout='fill' 
+                  alt="thumbnailImages"
+                  />
               }
            </div>
            <div className="chat-username">
@@ -127,7 +137,14 @@ useEffect(() => {
            </div>
            </div>
            <div  className="chat-input-box">
-             <input onChange={(e) => setMsg(e.target.value)} value={msg} type="text" placeholder='Enter your Message Here' />
+            <input
+             onChange={(e) => setMsg(e.target.value)}
+              value={msg}
+              type="text"
+              placeholder='Enter your Message Here'
+              onKeyDown={handleKeypress}
+              tabIndex={2}
+                 />
              <span onClick={handleSubmit}><BiSend /></span>
            </div>
            <div ref={ref} className="msg-container infinite-scroll-div-chat">

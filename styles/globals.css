@@ -1917,7 +1917,17 @@ input[type=range]::-webkit-slider-runnable-track {
 .chat-msg-user{
   color: rgb(121, 255, 103);
 }
-
+.unity-3d-icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.unity-3d-icon > svg{
+  width: 70%;
+  height: 70%;
+}
 
 
 /* slug space style  */
