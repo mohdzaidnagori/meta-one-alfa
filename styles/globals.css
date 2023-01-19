@@ -1260,8 +1260,8 @@ position: relative;
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
-    background: rgb(228, 228, 228);
-    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+    /* background: rgb(228, 228, 228); */
+    /* background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); */
     width: 0;
     overflow: hidden;
     color:#000;
@@ -1272,11 +1272,14 @@ position: relative;
   border-bottom-right-radius: 15px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: rgba(0, 0, 0, 0.50);
 }
 .sidbarBoxunity-border-right{
   position: relative;
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .SidebarBox-unity{
@@ -1805,7 +1808,7 @@ input[type=range]::-webkit-slider-runnable-track {
   position: absolute;
   top: 0;
   left: 0;
-  background-color:rgb(176, 176, 132);
+  background-color: rgba(0,0,0,.50);
   width: 100%;
   height: 60px;
   display: flex;
@@ -1817,10 +1820,10 @@ input[type=range]::-webkit-slider-runnable-track {
 .closed-chat-left > span {
   font-size: 28px;
   margin-left: 10px;
-  color: #000;
+  color: #fff;
 }
 .chat-username > h4{
-   color: #000;
+   color: #fff;
    font-size: 20px;
   margin-top: 10px;
 }
@@ -1832,16 +1835,19 @@ input[type=range]::-webkit-slider-runnable-track {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color:rgb(176, 176, 132);
+  background-color: rgba(0,0,0,.50);
 }
 .chat-input-box > input{
   flex: 0.8;
   outline: none;
   border: none;
   background-color: transparent;
-  color: #000;
+  color: #fff;
   margin-left: 20px;
   z-index: 9999;
+}
+.chat-input-box > input::placeholder{
+  color: #fff;
 }
 .chat-input-box > span{
   flex: 0.2;
@@ -1864,10 +1870,9 @@ input[type=range]::-webkit-slider-runnable-track {
   right: 0;
   bottom: 60px;
   top: 60px;
-  background-color: red;
   overflow-y: scroll;
   padding: 15px 15px;
-  background-color: transparent;
+  background-color: rgba(0,0,0,.50);
 }
 
 .infinite-scroll-div-chat::-webkit-scrollbar {
@@ -1897,7 +1902,7 @@ input[type=range]::-webkit-slider-runnable-track {
   max-width: fit-content;
   margin-block: 15px;
   font-size: 15px;
-  background-color: #5749d2;
+  background-color: rgb(34, 136, 255);
   padding: 10px 20px;
   color: #fff;
   border-radius: 20px;

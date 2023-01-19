@@ -152,7 +152,7 @@ useEffect(() => {
               getData.map((item) => {
                   if(item.username !== user.displayName){
                        return (
-                        <div className="chat-msg-box" key={item.id} style={{display:'flex',justifyContent:'flex-start'}}>
+                        <div className="chat-msg-box" key={item.listid} style={{display:'flex',justifyContent:'flex-start'}}>
                           <div className='msg-box msg-box-right'>
                            <p className='chat-msg-user'>{item.username}</p>
                            <p>{item.msg}</p>
@@ -163,7 +163,7 @@ useEffect(() => {
                   }
                   else{
                          return (
-                          <div className="chat-msg-box" key={item.id} style={{display:'flex',justifyContent:'flex-end'}}>
+                          <div className="chat-msg-box" key={item.listid} style={{display:'flex',justifyContent:'flex-end'}}>
                            <div className='msg-box msg-box-left'>
                            <p className='chat-msg-user'>You</p>
                             <p>{item.msg}</p>

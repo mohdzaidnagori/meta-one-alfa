@@ -16,6 +16,7 @@ const Addcontent = ({action,spaceId,Urldata}) => {
     const [ToggleState, setToggleState] = useState(1);
     const [showFileData,setShowFileData] = useState(null)
     const [showObjData,setShowObjData] = useState(null)
+    const [BlobData,setBlobData] = useState('')
     const router = useRouter()
     const toggleTab = (index) => {
       setToggleState(index);
@@ -144,9 +145,47 @@ const Addcontent = ({action,spaceId,Urldata}) => {
       //   }
        
       // };
+
+
+
+      const getBase64FromUrl = async (url) => {
+        console.log('base')
+        const data = await fetch(url);
+        const blob = await data.blob();
+        return new Promise((resolve, reject) => {
+          var reader  = new FileReader();
+          reader.addEventListener("load", function () {
+              resolve(reader.result);
+          }, false);
+      
+          reader.onerror = () => {
+            return reject(this);
+          };
+          reader.readAsDataURL(blob);
+        })
+      }
+      const res = async (File) => {
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.svg|\.pdf)$/i;
+        if(allowedExtensions.exec(File?.name)[0] === '.pdf'){
+                const url = `https://v2.convertapi.com/convert/pdf/to/png?Secret=PBLL2sgQJNyvgxYm&StoreFile=true`
+              console.log('ok')
+              const data = new FormData()
+              data.append('file',File)
+          const response = await axios.post(url,data,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+              }
+          })
+          const blobUrl =  await getBase64FromUrl(response.data.Files[0].Url)
+          return blobUrl
+    
+        }
+      }
+
+
     
       const onUpload =  async (files) => {
-        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.svg)$/i;
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.svg|\.pdf)$/i;
         var allowedExtensionsvideo = /(\.mp4|\.mkv)$/i;
         var allowedExtensionsobj = /(\.glb)$/i;
         const modalLoader = {
@@ -156,18 +195,19 @@ const Addcontent = ({action,spaceId,Urldata}) => {
             }
             dispatch(AddNote(modalLoader));
         if(allowedExtensions.exec(files.name)){
+          const result = await res(files)
+          console.log(result)
             toast.success('image uploading...')
             dispatch(DeleteNote())
             const url = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/addSpaceFiles`
             const data = new FormData()
-            data.append('file',files)
+            result !== '' ? data.append('url',result) : data.append('file',files)
             data.append('spaceId',spaceId)
             data.append('name',files.name)
             data.append('position',JSON.stringify([0,0,0]))
             data.append('rotation',JSON.stringify([0,0,0]))
             data.append('scale',JSON.stringify([1,1,1]))
             data.append('type','images')
-             console.log(data)
 
              await axios.post(url,data,{
                   headers: {
@@ -303,8 +343,8 @@ const Addcontent = ({action,spaceId,Urldata}) => {
         {
             allData?.map((item) => {
               return (
-               <div className="image-border-container">
-                 <div className="imgborder" key={item?.url}>
+               <div className="image-border-container" key={item?.id}>
+                 <div className="imgborder" >
                   {
                     item?.type === 'images'
                     ?
@@ -339,8 +379,8 @@ const Addcontent = ({action,spaceId,Urldata}) => {
            {
             showFileData?.map((item) => {
               return (
-               <div className="image-border-container">
-                 <div className="imgborder" key={item.url}>
+               <div className="image-border-container" key={item.id}>
+                 <div className="imgborder" >
                   {
                     item?.type === 'images'
                     ?
@@ -369,8 +409,8 @@ const Addcontent = ({action,spaceId,Urldata}) => {
         {
             showObjData?.map((item) => {
               return (
-               <div className="image-border-container">
-                 <div className="imgborder" key={item.url}>
+               <div className="image-border-container" key={item.id}>
+                 <div className="imgborder">
                   <div className="unity-3d-icon">
                   <SiUnity />
                   </div>

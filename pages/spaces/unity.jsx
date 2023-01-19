@@ -430,7 +430,7 @@ export const Unitypage = ({ children, enviroment }) => {
         )
       }
       <div className="unity-scene">
-        {enviroment}
+        {/* {enviroment} */}
 
       </div>
 
@@ -455,7 +455,6 @@ export const UnityEnviroment = () => {
     takeScreenshot,
     addEventListener,
     removeEventListener,
-    requestPointerLock
   } = useUnityContext({
     loaderUrl: "/Build/Build.loader.js",
     dataUrl: "/Build/Build.data",
@@ -501,6 +500,7 @@ export const UnityEnviroment = () => {
     const unityJson = JSON.stringify(unityData)
     console.log(unityJson)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
+    sendMessage("GameController", "Turnoffkeyboard");
   }
   function handleCacheControl(url) {
     console.log(`Cache control for ${url}`);
@@ -567,7 +567,7 @@ export const UnityEnviroment = () => {
 
   }
 
-console.log(devicePixelRatio)
+
 
 
 
@@ -577,7 +577,7 @@ console.log(devicePixelRatio)
 
   return (
     <Fragment>
-      {/* {!isLoaded && (
+      {!isLoaded && (
         <Unityloader loading={loading} envirometname={query.query.name} />
       )}
 
@@ -587,7 +587,7 @@ console.log(devicePixelRatio)
         // devicePixelRatio={devicePixelRatio}
         style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
       />
-      <div style={{position:'absolute',top:'0',left:'0',zIndex:'9999'}} onClick={handleClick}>Lock Pointer</div>; */}
+    
     </Fragment>
   )
 }
