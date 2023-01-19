@@ -7,6 +7,7 @@ import { AddUser } from '../redux/CounterSlice'
 import { useAuth } from '../router/AuthContext';
 import { useRouter } from 'next/router';
 import { query } from 'firebase/firestore';
+import { IoExitOutline } from 'react-icons/io5';
 
 
 const Agora = ({channelName}) => {
@@ -333,7 +334,7 @@ export const Controls = ({ user }) => {
        </div>
       }
       <div className='leave-container'>
-        <div className="unity-flex-child-leave" onClick={() => leaveChannel()}>Leave</div>
+        <div className="unity-flex-child-leave" onClick={() => leaveChannel()}>  <span style={{transform:'rotate(180deg)'}}><IoExitOutline /></span>Exit</div>
       </div>
   
       <div className="control-box">
@@ -352,11 +353,7 @@ export const Controls = ({ user }) => {
         
       }
       </div>
-      {/* {user.client && <p className={user.audio ? 'on' : ''} onClick={() => user.client && mute('audio', user.uid)}>{user.client && speaking && !user.audio ? 'Mic(Unmute if Speaking)' : 'Mic'}</p>} */}
-      {/* Button to Mute/Unmute Video */}
-      {/* {user.client && <p className={user.video ? 'on' : ''} onClick={() => user.client && mute('video', user.uid)}>Video</p>}
-      {user.client && <p onClick={() => leaveChannel()}>Quit</p>} */}
-      {/* Button to quit call if client */}
+
     
 
   

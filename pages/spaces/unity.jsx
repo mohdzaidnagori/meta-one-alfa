@@ -309,7 +309,7 @@ export const Unitypage = ({ children, enviroment }) => {
               <div className="unity-leave">
                 <div className="unity-flex-child-leave"
                   onClick={leavehandle}>
-                  Leave
+                   <span style={{transform:'rotate(180deg)'}}><IoExitOutline /></span>Exit
                 </div>
 
               </div>

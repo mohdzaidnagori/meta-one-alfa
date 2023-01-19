@@ -1627,8 +1627,8 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 .leave-container{
   position: absolute;
-  top: 3%;
-  left: 3%;
+  top: 4.7%;
+  left: 8%;
 }
 .mic-container-show{
   position: absolute;
