@@ -430,7 +430,7 @@ export const Unitypage = ({ children, enviroment }) => {
         )
       }
       <div className="unity-scene">
-        {/* {enviroment} */}
+        {enviroment}
 
       </div>
 
