@@ -38,12 +38,27 @@ export const userSlice = createSlice({
         }
     }
 })
+export const captureSlice = createSlice({
+    name:"capture",
+    initialState:{
+        capture:[]
+   },
+    reducers:{
+        create:{
+            reducer:(state,action) => {
+                state.capture.push(action.payload) 
+            }
+        }
+    }
+})
 
 export const { create: AddUser } = userSlice.actions;
+export const { create: AddCapture } = captureSlice.actions;
 export const { create: AddNote,DeleteNote } = notesSlice.actions;
 const reducer = {
     notes: notesSlice.reducer,
     users:userSlice.reducer,
+    capture:captureSlice.reducer
 };
 const middleware = [...getDefaultMiddleware()];
 export default configureStore({

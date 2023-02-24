@@ -201,7 +201,8 @@ const Addcontent = ({action,spaceId,Urldata}) => {
             dispatch(DeleteNote())
             const url = `https://asia-south1-metaone-ec336.cloudfunctions.net/api/addSpaceFiles`
             const data = new FormData()
-            result !== '' ? data.append('url',result) : data.append('file',files)
+            // result !== '' ? data.append('url',result) : data.append('file',files)
+            data.append('file',result)
             data.append('spaceId',spaceId)
             data.append('name',files.name)
             data.append('position',JSON.stringify([0,0,0]))

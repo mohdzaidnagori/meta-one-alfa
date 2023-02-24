@@ -1,33 +1,32 @@
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/router"
-import { Fragment, useEffect, useState, createRef } from "react"
+import { Fragment, useEffect, useState, } from "react"
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineDeploymentUnit, AiOutlineHeart, AiOutlineLeft, AiOutlineRight, AiOutlineSearch, AiOutlineUserAdd } from "react-icons/ai"
 import { RiCameraFill } from "react-icons/ri"
-import { BsMicMute, BsMic, BsCameraVideo, BsCameraVideoOff, BsShare, BsChat } from 'react-icons/bs'
+import { BsShare, BsChat } from 'react-icons/bs'
 import { GiPauseButton, GiPortal } from 'react-icons/gi'
 import { FiPlay } from 'react-icons/fi'
 import { IoExitOutline } from "react-icons/io5"
 import { useAuth } from "../../component/router/AuthContext"
-import { MdAdd, MdEmojiPeople, MdOutlineScreenShare, MdOutlineSpeakerNotes } from "react-icons/md"
-import { BiDotsHorizontalRounded, BiHelpCircle, BiPencil } from "react-icons/bi"
+import { MdAdd, MdOutlineScreenShare, MdOutlineSpeakerNotes } from "react-icons/md"
+import { BiDirections, BiDotsHorizontalRounded, BiPencil } from "react-icons/bi"
 
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { Unityloader } from "../../component/loader/Unityloader"
 import Addcontent from "../../component/unity/Addcontent"
-import { doc, getDoc, query, setDoc } from "firebase/firestore"
+import { collection, doc, getDoc, onSnapshot, update, setDoc, where, writeBatch } from "firebase/firestore"
 import { db } from "../../firebase"
 import toast, { Toaster } from 'react-hot-toast';
-import Sidabarunity from "../../component/unity/Sidabarunity";
-import { useCallback } from "react"
-import VideoSidebar from "../../component/unity/VideoSidebar"
 import dynamic from "next/dynamic"
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Agorausermodal from "../../component/unity/Agorausermodal";
 import Chat from "../../component/unity/Chat";
 import { saveAs } from 'file-saver'
+import { AddCapture } from "../../component/redux/CounterSlice";
+import Directionmodal from "../../component/unity/Directionmodal";
+import { query as FireQuery } from 'firebase/firestore'
 
 
 // import * as htmlToImage from "html-to-image";
@@ -71,12 +70,20 @@ export const Unitypage = ({ children, enviroment }) => {
   const [urlData, setUrlData] = useState({})
   const [videoCam, setVideocam] = useState(false)
   const [copied, setCopied] = useState(false);
+  const [chats, setChats] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [hidebehindButtonChat, setHidebehindButtonChat] = useState(false)
+  const [hidebehindButtonVideo, setHidebehindButtonVideo] = useState(false)
+  const [directionModal, setDirectionModal] = useState(false)
 
 
 
 
 
   const isLoaded = true;
+  const dispatch = useDispatch();
 
 
 
@@ -110,6 +117,7 @@ export const Unitypage = ({ children, enviroment }) => {
     if (type === 'video') {
       // setButtons(prev => ({...prev, videoCam:!buttons.videoCam}))
       setVideocam(!videoCam)
+      setHidebehindButtonVideo(true)
       // setjoinStream(!joinStream)
     }
   }
@@ -211,6 +219,7 @@ export const Unitypage = ({ children, enviroment }) => {
       //    videoCam:false
       //   }
       //    ))
+      setHidebehindButtonVideo(false)
       setVideocam(false)
     }
 
@@ -237,6 +246,8 @@ export const Unitypage = ({ children, enviroment }) => {
     document.body.removeChild(el);
     setCopied(true);
   }
+
+
   // const createFileName = (extension = "", ...names) => {
   //   if (!extension) {
   //     return "";
@@ -262,20 +273,61 @@ export const Unitypage = ({ children, enviroment }) => {
   const agoraControl = () => {
     setAgoraUsermodal(!agoraUsermodal)
   }
+  const directionModalHandle = () => {
+    setDirectionModal(!directionModal)
+  }
   const chatHandle = () => {
     setShowChat(false)
+    setHidebehindButtonChat(false)
+  }
+
+  const captureImage = () => {
+    dispatch(AddCapture(true));
   }
 
 
+  useEffect(() => {
+    if (!query.isReady) return;
+    const q = FireQuery(collection(db, "chats"), where("spaceId", "==", query.query.id));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          read: data.readBy.includes(user.uid),
+        };
+      });
+      setMessages(messages);
+    });
+    return unsubscribe;
+  }, [db, query.isReady, user]);
+
+  const ChatOpenhandle = async () => {
+    const unreadMessages = messages.filter((message) => message.sender !== user.uid && !message.read);
+    const batch = writeBatch(db);
+    unreadMessages.forEach((message) => {
+      const messageRef = doc(db, "chats", message.id);
+      batch.update(messageRef, {
+        readBy: [...message.readBy, user.uid],
+      });
+    });
+    await batch.commit();
+    setShowChat(true)
+    setHidebehindButtonChat(true)
+  }
+
+  const readfilter = messages.filter((message) => message.sender !== user.uid && !message.read)
+  console.log(readfilter)
   return (
     <div className="unity-scene-spaces">
-  
+
       <Toaster />
       <div className='SidebarBox-unity'>
         {/* <Sidabarunity sendMessage={sendMessage}  data={data}   open={buttons.open} closedModal={() => closedModalsidebar('openPosition')} /> */}
       </div>
       <div className='SidebarBox-unity-top-right'>
-      <Chat open={showChat} close={chatHandle} />
+        <Chat open={showChat} close={chatHandle} />
       </div>
       <div className='SidebarBox-unity-top-left'>
         <motion.div
@@ -306,13 +358,15 @@ export const Unitypage = ({ children, enviroment }) => {
         isLoaded && (
           <div className="unity-interaction-container">
             <div className="unity-interactions">
-              <div className="unity-leave">
-                <div className="unity-flex-child-leave"
-                  onClick={leavehandle}>
-                   <span style={{transform:'rotate(180deg)'}}><IoExitOutline /></span>Exit
-                </div>
+              {
+                <div className="unity-leave" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
+                  <div className="unity-flex-child-leave cursor-pointer"
+                    onClick={leavehandle}>
+                    <span style={{ transform: 'rotate(180deg)' }}><IoExitOutline /></span>Exit
+                  </div>
 
-              </div>
+                </div>
+              }
 
               <div className="unity-people">
                 <div className="unity-flex-child">
@@ -358,7 +412,7 @@ export const Unitypage = ({ children, enviroment }) => {
                 }
               </div>
               <div className="unity-like">
-                <div className="unity-flex-child">
+                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
                   <div className="like">
                     <span className={buttons.like ? "like-red" : ''} onClick={likeHandle}>
                       {
@@ -366,7 +420,7 @@ export const Unitypage = ({ children, enviroment }) => {
                       }
                     </span> {buttons.count}
                   </div>
-                  <div className="camera">
+                  <div className="camera unity-hover" data-name={"screenshot"} onClick={captureImage}>
                     <RiCameraFill />
                   </div>
                   <div onClick={copy} style={{ fontSize: '17px' }} className="camera unity-hover" data-name={!copied ? "Copy link" : "Copied!"} >
@@ -378,7 +432,7 @@ export const Unitypage = ({ children, enviroment }) => {
 
             <div className="unity-interactions">
               <div className="unity-leave" onClick={() => micHandle('video')}>
-                <div className="unity-flex-child">
+                <div className="unity-flex-child" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
                   <span>Stream</span> <span className="exit-rotate-unity"><AiOutlineDeploymentUnit /> </span>
                 </div>
                 {/* <div onClick={() => micHandle('video')} data-name={buttons.videoCam ? 'Turn of camera' : 'Turn on camera'} className="unity-flex-child unity-hover">
@@ -410,27 +464,34 @@ export const Unitypage = ({ children, enviroment }) => {
                           }
                         ))
                         }
-                        className="unity-bottom-center unity-hover" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
-                      <div onClick={searchhandle} className="unity-bottom-center unity-hover" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
-                      <div onClick={openModal} className="unity-bottom-center unity-hover" data-name="Add content" style={{ backgroundColor: '#28f' }}><MdAdd /></div>
-                      <div className="unity-bottom-center unity-hover" data-name="Add portal Coming soon"><GiPortal /></div>
-                      <div className="unity-bottom-center unity-hover" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
+                        className="unity-bottom-center unity-hover cursor-pointer" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
+                      <div onClick={searchhandle} className="unity-bottom-center unity-hover cursor-pointer" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
+                      <div onClick={openModal} className="unity-bottom-center unity-hover cursor-pointer" data-name="Add content" style={{ backgroundColor: '#28f' }}><MdAdd /></div>
+                      <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Add portal Coming soon"><GiPortal /></div>
+                      <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
                     </div>
                 }
               </div>
               <div className="unity-help">
-                <div className="unity-flex-child">
-                  <span><MdEmojiPeople /></span>
-                  <div onClick={() => setShowChat(true)} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat /></div>
+                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1'}}>
+
+                  <div className={directionModal ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Help" onClick={directionModalHandle}><BiDirections /></div>
+                  <div onClick={ChatOpenhandle} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat />
+                    {readfilter.length > 0 &&
+                      <span className="chat-notifications-count"></span>
+                    }
+                  </div>
+
                   <span><BiDotsHorizontalRounded /></span>
                 </div>
+                {directionModal && <Directionmodal close={directionModalHandle} />}
               </div>
             </div>
           </div>
         )
       }
       <div className="unity-scene">
-        {enviroment}
+        {enviroment} 
 
       </div>
 
@@ -440,9 +501,7 @@ export const Unitypage = ({ children, enviroment }) => {
 }
 export const UnityEnviroment = () => {
   const notes = useSelector((state) => state.notes.notes);
-  const [devicePixelRatio, setDevicePixelRatio] = useState(
-    window.devicePixelRatio
-  );
+  const capture = useSelector((state) => state.capture.capture);
   const dispatch = useDispatch()
   const { user } = useAuth()
   const query = useRouter()
@@ -456,43 +515,24 @@ export const UnityEnviroment = () => {
     addEventListener,
     removeEventListener,
   } = useUnityContext({
-    loaderUrl: "/Build/Build.loader.js",
-    dataUrl: "/Build/Build.data",
-    frameworkUrl: "/Build/Build.framework.js",
-    codeUrl: "/Build/Build.wasm",
+    loaderUrl: "/Build/EniverBuild.loader.js",
+    dataUrl: "/Build/EniverBuild.data",
+    frameworkUrl: "/Build/EniverBuild.framework.js",
+    codeUrl: "/Build/EniverBuild.wasm",
     webglContextAttributes: {
       preserveDrawingBuffer: true,
     },
     cacheControl: handleCacheControl,
   });
-  const handleChangePixelRatio = useCallback(
-    function () {
-      // A function which will update the device pixel ratio of the Unity
-      // Application to match the device pixel ratio of the browser.
-      const updateDevicePixelRatio = function () {
-        setDevicePixelRatio(window.devicePixelRatio);
-      };
-      // A media matcher which watches for changes in the device pixel ratio.
-      const mediaMatcher = window.matchMedia(
-        `screen and (resolution: ${devicePixelRatio}dppx)`
-      );
-      // Adding an event listener to the media matcher which will update the
-      // device pixel ratio of the Unity Application when the device pixel
-      // ratio changes.
-      mediaMatcher.addEventListener("change", updateDevicePixelRatio);
-      return function () {
-        // Removing the event listener when the component unmounts.
-        mediaMatcher.removeEventListener("change", updateDevicePixelRatio);
-      };
-    },
-    [devicePixelRatio]
-  );
+
   const loading = Math.round(loadingProgression * 100)
-  function handleClick() {
+
+  if (capture[capture.length - 1] === true) {
     const dataUrl = takeScreenshot("image/jpg", 1.0);
     saveAs(dataUrl, 'image.jpg') // Put your image url here.
     console.log('ok')
   }
+
 
 
   const EnvironmentLoader = () => {
@@ -520,7 +560,7 @@ export const UnityEnviroment = () => {
 
 
   const CreateAndJoinRooms = () => {
-    const unityData = { roomName: query.query.id, playerName: user.displayName, }
+    const unityData = {roomID: query.query.id,playerID: user.uid}
     const unityJson = JSON.stringify(unityData)
     sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
   }
@@ -560,7 +600,7 @@ export const UnityEnviroment = () => {
   else if (notes[notes.length - 1]?.type === 'glb') {
     GlbUploader()
   }
-  if (isLoaded && notes.length === 0) {
+  if (isLoaded && notes.length === 0 && capture.length === 0) {
     CreateAndJoinRooms()
     EnvironmentLoader()
     ModelLoader()
@@ -587,7 +627,7 @@ export const UnityEnviroment = () => {
         // devicePixelRatio={devicePixelRatio}
         style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
       />
-    
+
     </Fragment>
   )
 }

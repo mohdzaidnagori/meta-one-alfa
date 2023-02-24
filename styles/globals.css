@@ -29,6 +29,9 @@ a{
 a:hover{
   color: inherit;
 }
+.cursor-pointer{
+  cursor: pointer;
+}
 
 
 * {
@@ -979,6 +982,7 @@ position: relative;
   font-size: 28px;
   display: flex;
   align-items: center;
+  justify-content: center;
   column-gap: 15px;
 }
 .unity-interactions .unity-help .unity-flex-child > span:nth-child(3){
@@ -1007,12 +1011,13 @@ position: relative;
   column-gap: 15px;
 }
 .unity-bottom-center{
-  width: 55px;
-  height: 55px;
-  border-radius: 55px;
+  width: max-content;
+  padding-inline: 20px;
+  height: 50px;
+  border-radius: 65px;
   background-color: rgba(0,0,0,.25);
   display: flex;
-  font-size: 24px;
+  font-size: 22px;
   justify-content:center;
   align-items: center;
   color: #fff;
@@ -1022,11 +1027,14 @@ position: relative;
 
 .unity-hover{
   position: relative;
-  transform: scale(1);
-  transition: 0.3s  all;
+  scale: 1;
+  transition: 0.3s  all ease-in;
+}
+.unity-hover > svg{
+  transition: none;
 }
 .unity-hover:hover{
-  transform: scale(1.2);
+  scale: 1.2;
   transition-delay: 0.3s;
   box-shadow:0 13.689px 27.3779px rgb(0 0 0 / 40%);
 }
@@ -1766,6 +1774,26 @@ input[type=range]::-webkit-slider-runnable-track {
     border-radius: 10px;
     padding: 10px;
 }
+.modal-direction-open{
+  position: absolute;
+  bottom: 95px;
+  right: 140px;
+  width: 320px;
+  z-index: 900;
+  background-color: #fff;
+  box-shadow: 0 13.689px 27.3779px rgb(0 0 0 / 40%);
+  border-radius: 10px;
+  padding: 10px;
+}
+.direction-trianle{
+  position: absolute;
+  width: 30px;
+  height: 50px;
+  right: 22px;
+  bottom: -12px;
+  background-color: #fff;
+  transform: rotate(220deg);
+}
 .close-agora-modal{
   color: black;
   position: absolute;
@@ -1934,6 +1962,19 @@ input[type=range]::-webkit-slider-runnable-track {
   height: 70%;
 }
 
+.chat-notifications-count{
+  position: absolute;
+  top: 2.5px;
+  right: 2.5px;
+  height: 10px;
+  font-size: 14px;
+  width: 10px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #51ff00;
+}
 
 /* slug space style  */
 
