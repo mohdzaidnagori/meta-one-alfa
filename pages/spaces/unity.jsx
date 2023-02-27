@@ -78,14 +78,18 @@ export const Unitypage = ({ children, enviroment }) => {
   const [hidebehindButtonVideo, setHidebehindButtonVideo] = useState(false)
   const [directionModal, setDirectionModal] = useState(false)
 
-
+  
+  if (!user || !user.emailVerified) {
+    query.push('/login')
+    return null
+  }
 
 
 
   const isLoaded = true;
   const dispatch = useDispatch();
 
-
+ 
 
 
 
@@ -316,7 +320,7 @@ export const Unitypage = ({ children, enviroment }) => {
     setShowChat(true)
     setHidebehindButtonChat(true)
   }
-
+console.log(user.photoUrl)
   const readfilter = messages.filter((message) => message.sender !== user.uid && !message.read)
   console.log(readfilter)
   return (
@@ -400,8 +404,8 @@ export const Unitypage = ({ children, enviroment }) => {
 
                   <div className="bg-info rounded-circle image-space unity-avatar-border" onClick={agoraControl}>
                     {
-                      user.photoUrl ?
-                        <Image className="space-avtar-img" src={user.photoUrl} priority={true} layout='fill' alt="avatarImages" />
+                      user?.photoUrl ?
+                        <Image className="space-avtar-img" src={user?.photoUrl ? user?.photoUrl : '/images/login-images/thumbnail.png'} priority={true} layout='fill' alt="avatarImages" />
                         :
                         <Image src='/images/login-images/thumbnail.png' priority={true} layout='fill' alt="thumbnailImages" />
                     }
@@ -491,7 +495,7 @@ export const Unitypage = ({ children, enviroment }) => {
         )
       }
       <div className="unity-scene">
-        {enviroment} 
+        {/* {enviroment}  */}
 
       </div>
 
@@ -606,8 +610,11 @@ export const UnityEnviroment = () => {
     ModelLoader()
 
   }
-
-
+const handleremove = () => {
+  const unityData = {roomID: query.query.id,playerID: user.uid}
+  const unityJson = JSON.stringify(unityData)
+  sendMessage("CreateAndJoinRooms", "RemoveUser",unityJson);
+}
 
 
 
@@ -617,6 +624,7 @@ export const UnityEnviroment = () => {
 
   return (
     <Fragment>
+      <button onClick={handleremove}>sumbit</button>
       {!isLoaded && (
         <Unityloader loading={loading} envirometname={query.query.name} />
       )}

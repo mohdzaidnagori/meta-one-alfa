@@ -44,7 +44,6 @@ const Register = () => {
       if(password != cpassword){
         return toast.error('password and confirm password is not same')
       }
-      //  dispatch(loginStart())
        createUserWithEmailAndPassword(auth,email,password).then(
         (userAuth) => {
              sendEmailVerification(userAuth.user)
@@ -52,17 +51,7 @@ const Register = () => {
                 displayName: name,
                 photoURL:'',
                 emailVerified:userAuth.user.emailVerified
-            }).then(
-                // () => {
-                //     dispatch(loginSuccess({
-                //         email:userAuth.user.email,
-                //         uid:userAuth.user.uid,
-                //         displayName:name,
-                //         photoURL:'',
-                //         emailVerified:userAuth.user.emailVerified
-                //     }))
-                // }
-            )
+            })
             router.push('/login/verified')
         }
         
@@ -74,6 +63,7 @@ const Register = () => {
         }
          
      )
+   
      
 
   }
@@ -94,16 +84,6 @@ const Register = () => {
 
   const { user } = useAuth()
 
-  useEffect(() => {
-    if (user) {
-      if(user.emailVerified === false){
-        router.push('/login/verified')
-      }
-      else{
-        router.push('/')
-      }
-    }
-  }, [router, user])
   return (
     <>
     <Toaster />

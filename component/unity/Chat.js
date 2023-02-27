@@ -112,7 +112,6 @@ const Chat = ({ open, close }) => {
       handleSubmit();
     }
   };
-
   return (
     <>
       <AnimatePresence>
@@ -131,7 +130,7 @@ const Chat = ({ open, close }) => {
               </div>
               <div className="bg-info rounded-circle image-space" style={{ border: '2px solid #fff' }}>
                 {
-                  <Image src={user.photoUrl}
+                  <Image src={user?.photoUrl}
                     priority={true}
                     layout='fill'
                     alt="thumbnailImages"

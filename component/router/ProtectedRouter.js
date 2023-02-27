@@ -10,7 +10,10 @@ const ProtectedRouter = ({ children }) => {
     if (!user) {
       router.push('/login')
     }
-  }, [router, user])
+    else if (!user.emailVerified) {
+      router.push('/login/verified')
+    }
+  }, [user])
 
   return <>{user ? children : null}</>
 }
