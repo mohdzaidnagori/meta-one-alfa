@@ -15,7 +15,7 @@ import { BiDirections, BiDotsHorizontalRounded, BiPencil } from "react-icons/bi"
 import { Unity, useUnityContext } from "react-unity-webgl";
 import { Unityloader } from "../../component/loader/Unityloader"
 import Addcontent from "../../component/unity/Addcontent"
-import { collection, doc, getDoc, onSnapshot, update, setDoc, where, writeBatch } from "firebase/firestore"
+import { collection, doc, getDoc, onSnapshot, update, setDoc, where, writeBatch, deleteDoc } from "firebase/firestore"
 import { db } from "../../firebase"
 import toast, { Toaster } from 'react-hot-toast';
 import dynamic from "next/dynamic"
@@ -27,6 +27,7 @@ import { saveAs } from 'file-saver'
 import { AddCapture } from "../../component/redux/CounterSlice";
 import Directionmodal from "../../component/unity/Directionmodal";
 import { query as FireQuery } from 'firebase/firestore'
+import axios from "axios";
 
 
 // import * as htmlToImage from "html-to-image";
@@ -78,18 +79,15 @@ export const Unitypage = ({ children, enviroment }) => {
   const [hidebehindButtonVideo, setHidebehindButtonVideo] = useState(false)
   const [directionModal, setDirectionModal] = useState(false)
 
-  
-  if (!user || !user.emailVerified) {
-    query.push('/login')
-    return null
-  }
+
+
 
 
 
   const isLoaded = true;
   const dispatch = useDispatch();
 
- 
+
 
 
 
@@ -149,8 +147,55 @@ export const Unitypage = ({ children, enviroment }) => {
       })
 
   }
-  const leavehandle = () => {
-    location.href = '/spaces'
+  const leavehandle = async () => {
+    if (!query.isReady) return;
+    //     const url = 'https://asia-south1-metaone-ec336.cloudfunctions.net/api/removePlayerFromRoom'
+    //     const data = {
+    //       playerID:user.uid,
+    //       roomID:query.query.id
+    //     }
+    //     var raw = JSON.stringify({
+    //       "playerID":user.uid,
+    //       "roomID": '7qSoNOGTi5XHzFpGGpBA'
+    //     });
+    // console.log(data)
+    //     await axios.post(url,data).then((res) => {
+    //       console.log(res)
+    //     })
+    // var myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "application/json");
+    // const roomId = query.query.id.toString()
+    // const userId = user.uid.toString()
+    // var raw = JSON.stringify({
+    //   "playerID": userId,
+    //   "roomID": roomId
+    // });
+    // console.log(raw)
+    // var requestOptions = {
+    //   method: 'POST',
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: 'follow'
+    // };
+
+    // await fetch("https://asia-south1-metaone-ec336.cloudfunctions.net/api/removePlayerFromRoom", requestOptions)
+    //   .then(response => response.text())
+    //   .then(result => console.log(result))
+    //   .catch(error => console.log('error', error));
+    // // location.href = '/spaces'
+    const documentId = user.uid+query.query.id+1
+    const documentRef = doc(db, 'players', documentId);
+
+    
+    console.log(documentId)
+    deleteDoc(documentRef)
+      .then(() => {
+        console.log('Document deleted successfully');
+      })
+      .catch((error) => {
+        console.error('Error deleting document: ', error);
+      });
+  
   }
 
 
@@ -320,7 +365,6 @@ export const Unitypage = ({ children, enviroment }) => {
     setShowChat(true)
     setHidebehindButtonChat(true)
   }
-console.log(user.photoUrl)
   const readfilter = messages.filter((message) => message.sender !== user.uid && !message.read)
   console.log(readfilter)
   return (
@@ -477,7 +521,7 @@ console.log(user.photoUrl)
                 }
               </div>
               <div className="unity-help">
-                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1'}}>
+                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
 
                   <div className={directionModal ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Help" onClick={directionModalHandle}><BiDirections /></div>
                   <div onClick={ChatOpenhandle} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat />
@@ -495,7 +539,7 @@ console.log(user.photoUrl)
         )
       }
       <div className="unity-scene">
-        {/* {enviroment}  */}
+        {enviroment} 
 
       </div>
 
@@ -506,7 +550,6 @@ console.log(user.photoUrl)
 export const UnityEnviroment = () => {
   const notes = useSelector((state) => state.notes.notes);
   const capture = useSelector((state) => state.capture.capture);
-  const dispatch = useDispatch()
   const { user } = useAuth()
   const query = useRouter()
   const {
@@ -555,7 +598,7 @@ export const UnityEnviroment = () => {
 
 
   const ModelLoader = () => {
-    const unityData = { id: '5s1l4XbAG5DHtc8UyO51', type: 'spaces', }
+    const unityData = { id: query.query.id, type: 'spaces', }
     const unityJson = JSON.stringify(unityData)
     sendMessage("ModelLoader", "OtherModel", unityJson);
     sendMessage("FileLoader", "OtherFiles", unityJson);
@@ -564,7 +607,7 @@ export const UnityEnviroment = () => {
 
 
   const CreateAndJoinRooms = () => {
-    const unityData = {roomID: query.query.id,playerID: user.uid}
+    const unityData = { roomID: query.query.id, playerID: user.uid }
     const unityJson = JSON.stringify(unityData)
     sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
   }
@@ -610,11 +653,11 @@ export const UnityEnviroment = () => {
     ModelLoader()
 
   }
-const handleremove = () => {
-  const unityData = {roomID: query.query.id,playerID: user.uid}
-  const unityJson = JSON.stringify(unityData)
-  sendMessage("CreateAndJoinRooms", "RemoveUser",unityJson);
-}
+  const handleremove = () => {
+    const unityData = { roomID: `${query.query.id}`, playerID: user.uid }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("CreateAndJoinRooms", "RemoveUser", unityJson);
+  }
 
 
 
@@ -624,7 +667,7 @@ const handleremove = () => {
 
   return (
     <Fragment>
-      <button onClick={handleremove}>sumbit</button>
+      {/* <button onClick={handleremove}>sumbit</button> */}
       {!isLoaded && (
         <Unityloader loading={loading} envirometname={query.query.name} />
       )}
