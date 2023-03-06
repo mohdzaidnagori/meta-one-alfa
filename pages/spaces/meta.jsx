@@ -24,7 +24,6 @@ const Meta = () => {
     const unityData = { id: 'v0qkneychmlRlMPqBCIY', type: 'spaces',playerName:user.id }
     const unityJson = JSON.stringify(unityData)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
-    sendMessage("GameController", "Turnoffkeyboard");
   }
   if(isLoaded){
     EnvironmentLoader()
