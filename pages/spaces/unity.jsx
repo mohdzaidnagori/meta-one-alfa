@@ -401,7 +401,7 @@ export const Unitypage = ({ children, enviroment }) => {
         <div className="newSpace">
           <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
         </div>}
-      { loading[loading.length -1] &&
+        { /*  loading[loading.length -1] && */
          (
           <div className="unity-interaction-container">
             <div className="unity-interactions">
@@ -570,10 +570,10 @@ export const UnityEnviroment = () => {
     addEventListener,
     removeEventListener,
   } = useUnityContext({
-    loaderUrl: "/Build/EniverBuild.loader.js",
-    dataUrl: "/Build/EniverBuild.data",
-    frameworkUrl: "/Build/EniverBuild.framework.js",
-    codeUrl: "/Build/EniverBuild.wasm",
+    loaderUrl: "/Build/Build.loader.js",
+    dataUrl: "/Build/Build.data",
+    frameworkUrl: "/Build/Build.framework.js",
+    codeUrl: "/Build/Build.wasm",
     webglContextAttributes: {
       preserveDrawingBuffer: true,
     },

@@ -2023,6 +2023,49 @@ input[type=range]::-webkit-slider-runnable-track {
   transform: translate(-50%,30%);
   font-size: 98px;
 }
+
+.agora-direction-container{
+  position: relative;
+  z-index: 100;
+  display: grid;
+  overflow: hidden;
+  grid-template-areas:'left-side right-side'
+                      'heading heading'
+                      'space animation';
+  height: 250px;
+  
+}
+.left-side-direction{
+background: url('../public/images/login-images/keyboard-key.png');
+background-size: 70% 70%;
+background-repeat: no-repeat;
+background-position: center;
+grid-area: left-side;
+min-height: 100px;
+}
+.right-side-direction{
+ background: url('../public/images/login-images/buttons.png');
+background-size: 80% 80%;
+background-repeat: no-repeat;
+background-position: center;
+grid-area: right-side;
+min-height: 100px;
+}
+.agora-direction-container .direction-heading{
+  width: 100%;
+  grid-area: heading;
+  max-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.agora-direction-container .space-jump-direction{
+  grid-area: space;
+  height: 70px;
+}
+.agora-direction-container .animation-direction{
+  grid-area: animation;
+}
 /* slug space style  */
 
 

@@ -41,8 +41,12 @@ const Directionmodal = ({close}) => {
         <IoCloseSharp onClick={close} />
     </div>
     <div className="direction-trianle"></div>
-    <div className="agora-user-container">
-        direction modal
+    <div className="agora-user-container agora-direction-container">
+        <div className="left-side-direction"></div>
+        <div className="right-side-direction"></div>
+        <div className='direction-heading'>Avatar Move</div>
+        <div className="space-jump-direction">Lorem ipsum dolor sit amet.</div>
+        <div className="animation-direction">Lorem ipsum dolor sit amet.</div>
     </div>
  </motion.div>
   )
