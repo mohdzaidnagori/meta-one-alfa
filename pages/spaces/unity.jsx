@@ -687,15 +687,6 @@ export const UnityEnviroment = () => {
       < Unity
         unityProvider={unityProvider}
         tabIndex={1}
-        onMessage={(message) => {
-          if (message.data.type === "SendDataToJS") {
-            setUnityData(message);
-          }
-        }}
-        onInitialized={() => {
-          console.log("Unity game initialized");
-        }}
-        // devicePixelRatio={devicePixelRatio}
         style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
       />
 

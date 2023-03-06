@@ -2024,47 +2024,46 @@ input[type=range]::-webkit-slider-runnable-track {
   font-size: 98px;
 }
 
-.agora-direction-container{
+
+.agora-direction-container .direction-button-1 {
+  background: url('../public/images/login-images/keyboard-key.png');
+  background-size: 70% 70%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.agora-direction-container .direction-button-2 {
+  background: url('../public/images/login-images/buttons.png');
+  background-size: 70% 70%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.agora-direction-container .direction-button-3 {
+  background: url('../public/images/login-images/space.png');
+  background-size: 70% 70%;
+  background-repeat: no-repeat;
+  background-position: 50% 20%;
   position: relative;
-  z-index: 100;
-  display: grid;
-  overflow: hidden;
-  grid-template-areas:'left-side right-side'
-                      'heading heading'
-                      'space animation';
-  height: 250px;
-  
 }
-.left-side-direction{
-background: url('../public/images/login-images/keyboard-key.png');
-background-size: 70% 70%;
-background-repeat: no-repeat;
-background-position: center;
-grid-area: left-side;
-min-height: 100px;
+.agora-direction-container .direction-button-3::after{
+  content: 'Jump';
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%,-90%);
 }
-.right-side-direction{
- background: url('../public/images/login-images/buttons.png');
-background-size: 80% 80%;
-background-repeat: no-repeat;
-background-position: center;
-grid-area: right-side;
-min-height: 100px;
+.agora-direction-container .direction-button-4 {
+  background: url('../public/images/login-images/1-button.png'),url('../public/images/login-images/2-button.png');
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  background-position: 0% 30%, 90% 30%;
+  position: relative;
 }
-.agora-direction-container .direction-heading{
-  width: 100%;
-  grid-area: heading;
-  max-height: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.agora-direction-container .space-jump-direction{
-  grid-area: space;
-  height: 70px;
-}
-.agora-direction-container .animation-direction{
-  grid-area: animation;
+.agora-direction-container .direction-button-4::after{
+  content: 'Animation';
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%,-90%);
 }
 /* slug space style  */
 
