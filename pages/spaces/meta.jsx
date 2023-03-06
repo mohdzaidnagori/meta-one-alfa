@@ -3,7 +3,7 @@ import { Unity, useUnityContext } from 'react-unity-webgl';
 import { Unityloader } from '../../component/loader/Unityloader';
 import { useAuth } from '../../component/router/AuthContext';
 
-const meta = () => {
+const Meta = () => {
     const {
         unityProvider,
         sendMessage,
@@ -56,4 +56,4 @@ const meta = () => {
   )
 }
 
-export default meta
+export default Meta
