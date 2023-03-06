@@ -591,7 +591,7 @@ export const UnityEnviroment = () => {
 
 
   const EnvironmentLoader = () => {
-    const unityData = { id: query.query.sceneId, type: 'spaces' }
+    const unityData = { id: 'v0qkneychmlRlMPqBCIY', type: 'spaces',playerName:user.id }
     const unityJson = JSON.stringify(unityData)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
     sendMessage("GameController", "Turnoffkeyboard");
@@ -655,7 +655,7 @@ export const UnityEnviroment = () => {
   // }
   // && notes.length === 0
   if (isLoaded && capture.length === 0) {
-    CreateAndJoinRooms()
+    // CreateAndJoinRooms()
     EnvironmentLoader()
     // ModelLoader()
 

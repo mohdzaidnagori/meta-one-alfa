@@ -9,6 +9,7 @@ const Meta = () => {
         sendMessage,
         loadingProgression,
         isLoaded,
+        unload
       } = useUnityContext({
         loaderUrl: "/Build/Build.loader.js",
         dataUrl: "/Build/Build.data",
@@ -18,26 +19,32 @@ const Meta = () => {
 
   const loading = Math.round(loadingProgression * 100)
   const { user } = useAuth()
+
   const EnvironmentLoader = () => {
-    const unityData = { id: 'v0qkneychmlRlMPqBCIY', type: 'spaces' }
+    const unityData = { id: 'v0qkneychmlRlMPqBCIY', type: 'spaces',playerName:user.id }
     const unityJson = JSON.stringify(unityData)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
-  }
-
-  const CreateAndJoinRooms = () => {
-    const unityData = { roomID: '0CfgS2PuBNimmQvmCTz3', playerID: user.uid }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
+    sendMessage("GameController", "Turnoffkeyboard");
   }
   if(isLoaded){
-    CreateAndJoinRooms()
+    EnvironmentLoader()
   }
 
 
 
 
 
-
+//   const handleClickUnload = async () => {
+//     if (isLoaded === false) {
+//       return;
+//     }
+//     try {
+//       await unload();
+//       console.log("Unload success");
+//     } catch (error) {
+//       console.error(`Unable to unload: ${error}`);
+//     }
+//   };
 
 
 
@@ -52,6 +59,7 @@ const Meta = () => {
           unityProvider={unityProvider}
           style={{ visibility: isLoaded ? "visible" : "hidden",width:'100vw',height:'99vh',overflow:'hidden' }}
           />
+             {/* <button style={{position:'relative',zIndex:'1000',top:'0',width:'100px',height:'100px'}} onClick={handleClickUnload}>Unload</button> */}
     </Fragment>
   )
 }
