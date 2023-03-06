@@ -51,14 +51,29 @@ export const captureSlice = createSlice({
         }
     }
 })
+export const loadingSlice = createSlice({
+    name:"loading",
+    initialState:{
+        loading:[false]
+   },
+    reducers:{
+        create:{
+            reducer:(state,action) => {
+                state.loading.push(action.payload) 
+            }
+        }
+    }
+})
 
 export const { create: AddUser } = userSlice.actions;
 export const { create: AddCapture } = captureSlice.actions;
 export const { create: AddNote,DeleteNote } = notesSlice.actions;
+export const { create: AddLoading } = loadingSlice.actions;
 const reducer = {
     notes: notesSlice.reducer,
     users:userSlice.reducer,
-    capture:captureSlice.reducer
+    capture:captureSlice.reducer,
+    loading:loadingSlice.reducer
 };
 const middleware = [...getDefaultMiddleware()];
 export default configureStore({

@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { useRouter } from "next/router"
-import { Fragment, useEffect, useState, } from "react"
+import { Fragment, useCallback, useEffect, useState, } from "react"
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineDeploymentUnit, AiOutlineHeart, AiOutlineLeft, AiOutlineRight, AiOutlineSearch, AiOutlineUserAdd } from "react-icons/ai"
 import { RiCameraFill } from "react-icons/ri"
@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Agorausermodal from "../../component/unity/Agorausermodal";
 import Chat from "../../component/unity/Chat";
 import { saveAs } from 'file-saver'
-import { AddCapture } from "../../component/redux/CounterSlice";
+import { AddCapture, AddLoading } from "../../component/redux/CounterSlice";
 import Directionmodal from "../../component/unity/Directionmodal";
 import { query as FireQuery } from 'firebase/firestore'
 import axios from "axios";
@@ -86,7 +86,7 @@ export const Unitypage = ({ children, enviroment }) => {
 
   const isLoaded = true;
   const dispatch = useDispatch();
-
+  const loading = useSelector((state) => state.loading.loading);
 
 
 
@@ -183,10 +183,10 @@ export const Unitypage = ({ children, enviroment }) => {
     //   .then(result => console.log(result))
     //   .catch(error => console.log('error', error));
     // // location.href = '/spaces'
-    const documentId = user.uid+query.query.id+1
+    const documentId = user.uid + query.query.id + 1
     const documentRef = doc(db, 'players', documentId);
 
-    
+
     console.log(documentId)
     deleteDoc(documentRef)
       .then(() => {
@@ -195,7 +195,7 @@ export const Unitypage = ({ children, enviroment }) => {
       .catch((error) => {
         console.error('Error deleting document: ', error);
       });
-  
+
   }
 
 
@@ -334,7 +334,6 @@ export const Unitypage = ({ children, enviroment }) => {
     dispatch(AddCapture(true));
   }
 
-
   useEffect(() => {
     if (!query.isReady) return;
     const q = FireQuery(collection(db, "chats"), where("spaceId", "==", query.query.id));
@@ -369,14 +368,13 @@ export const Unitypage = ({ children, enviroment }) => {
   console.log(readfilter)
   return (
     <div className="unity-scene-spaces">
-
       <Toaster />
-      <div className='SidebarBox-unity'>
-        {/* <Sidabarunity sendMessage={sendMessage}  data={data}   open={buttons.open} closedModal={() => closedModalsidebar('openPosition')} /> */}
-      </div>
+
       <div className='SidebarBox-unity-top-right'>
         <Chat open={showChat} close={chatHandle} />
       </div>
+
+
       <div className='SidebarBox-unity-top-left'>
         <motion.div
           variants={sidebarVariants}
@@ -398,12 +396,13 @@ export const Unitypage = ({ children, enviroment }) => {
         </motion.div>
         {/* <VideoSidebar  username={pathName} pathId={pathId} open={buttons.videoCam} closedModal={() => closedModalsidebar('openVideo')} /> */}
       </div>
+
       {ismodal &&
         <div className="newSpace">
           <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
         </div>}
-      {
-        isLoaded && (
+      { loading[loading.length -1] &&
+         (
           <div className="unity-interaction-container">
             <div className="unity-interactions">
               {
@@ -503,7 +502,7 @@ export const Unitypage = ({ children, enviroment }) => {
                       </span>
                       <span><AiOutlineRight /></span>
                     </div>
-                    : <div className="unity-bottom-center-flex">
+                    : <div className="unity-bottom-center-flex" style={{ opacity: 0 }}>
                       <div
                         onClick={() => setButtons(prev => (
                           {
@@ -538,8 +537,14 @@ export const Unitypage = ({ children, enviroment }) => {
           </div>
         )
       }
+    
+   
+
+
+
+
       <div className="unity-scene">
-        {enviroment} 
+        {enviroment}
 
       </div>
 
@@ -550,6 +555,7 @@ export const Unitypage = ({ children, enviroment }) => {
 export const UnityEnviroment = () => {
   const notes = useSelector((state) => state.notes.notes);
   const capture = useSelector((state) => state.capture.capture);
+  const [FullLoaded, setFullLoaded] = useState(false);
   const { user } = useAuth()
   const query = useRouter()
   const {
@@ -559,6 +565,8 @@ export const UnityEnviroment = () => {
     isLoaded,
     initialisationError,
     takeScreenshot,
+    onProgress,
+    onMessage,
     addEventListener,
     removeEventListener,
   } = useUnityContext({
@@ -571,7 +579,7 @@ export const UnityEnviroment = () => {
     },
     cacheControl: handleCacheControl,
   });
-
+  const dispatch = useDispatch();
   const loading = Math.round(loadingProgression * 100)
 
   if (capture[capture.length - 1] === true) {
@@ -585,7 +593,6 @@ export const UnityEnviroment = () => {
   const EnvironmentLoader = () => {
     const unityData = { id: query.query.sceneId, type: 'spaces' }
     const unityJson = JSON.stringify(unityData)
-    console.log(unityJson)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
     sendMessage("GameController", "Turnoffkeyboard");
   }
@@ -615,49 +622,55 @@ export const UnityEnviroment = () => {
 
   // // GameObject And Class Name : ImageLoader / Function Name : ImgLoader
 
-  const ImageUploader = () => {
-    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("ImageLoader", "ImgLoader", unityJson);
-    console.log('image uploader')
-  }
-  const VideoUploader = () => {
-    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("VideoLoad", "VideoLoader", unityJson);
-    console.log('video uploader')
-  }
-  const GlbUploader = () => {
-    const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("UploadedModelLoader", "UplodedModel", unityJson);
-    console.log('glb uploader')
-  }
+  // const ImageUploader = () => {
+  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+  //   const unityJson = JSON.stringify(unityData)
+  //   sendMessage("ImageLoader", "ImgLoader", unityJson);
+  //   console.log('image uploader')
+  // }
+  // const VideoUploader = () => {
+  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+  //   const unityJson = JSON.stringify(unityData)
+  //   sendMessage("VideoLoad", "VideoLoader", unityJson);
+  //   console.log('video uploader')
+  // }
+  // const GlbUploader = () => {
+  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+  //   const unityJson = JSON.stringify(unityData)
+  //   sendMessage("UploadedModelLoader", "UplodedModel", unityJson);
+  //   console.log('glb uploader')
+  // }
 
-  console.log(initialisationError)
 
 
   //   console.log('unity running')
-  if (notes[notes.length - 1]?.type === 'img') {
-    ImageUploader()
-  }
-  else if (notes[notes.length - 1]?.type === 'video') {
-    VideoUploader()
-  }
-  else if (notes[notes.length - 1]?.type === 'glb') {
-    GlbUploader()
-  }
-  if (isLoaded && notes.length === 0 && capture.length === 0) {
+  // if (notes[notes.length - 1]?.type === 'img') {
+  //   ImageUploader()
+  // }
+  // else if (notes[notes.length - 1]?.type === 'video') {
+  //   VideoUploader()
+  // }
+  // else if (notes[notes.length - 1]?.type === 'glb') {
+  //   GlbUploader()
+  // }
+  // && notes.length === 0
+  if (isLoaded && capture.length === 0) {
     CreateAndJoinRooms()
     EnvironmentLoader()
-    ModelLoader()
+    // ModelLoader()
 
   }
-  const handleremove = () => {
-    const unityData = { roomID: `${query.query.id}`, playerID: user.uid }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("CreateAndJoinRooms", "RemoveUser", unityJson);
-  }
+  const unityFullLoaded = useCallback(() => {
+    dispatch(AddLoading(true));
+  }, []);
+
+  useEffect(() => {
+    addEventListener("UserJoin", unityFullLoaded);
+    return () => {
+      removeEventListener("UserJoin", unityFullLoaded);
+    };
+  }, [unityFullLoaded, addEventListener, removeEventListener])
+
 
 
 
@@ -667,7 +680,6 @@ export const UnityEnviroment = () => {
 
   return (
     <Fragment>
-      {/* <button onClick={handleremove}>sumbit</button> */}
       {!isLoaded && (
         <Unityloader loading={loading} envirometname={query.query.name} />
       )}
@@ -675,6 +687,14 @@ export const UnityEnviroment = () => {
       < Unity
         unityProvider={unityProvider}
         tabIndex={1}
+        onMessage={(message) => {
+          if (message.data.type === "SendDataToJS") {
+            setUnityData(message);
+          }
+        }}
+        onInitialized={() => {
+          console.log("Unity game initialized");
+        }}
         // devicePixelRatio={devicePixelRatio}
         style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
       />
