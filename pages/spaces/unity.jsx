@@ -401,7 +401,7 @@ export const Unitypage = ({ children, enviroment }) => {
         <div className="newSpace">
           <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
         </div>}
-        { /*  loading[loading.length -1] && */
+          {/* loading[loading.length -1] &&  */}
          (
           <div className="unity-interaction-container">
             <div className="unity-interactions">
@@ -536,7 +536,7 @@ export const Unitypage = ({ children, enviroment }) => {
             </div>
           </div>
         )
-      }
+      {/* } */}
     
    
 
