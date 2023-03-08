@@ -182,19 +182,19 @@ export const Unitypage = ({ children, enviroment }) => {
     //   .then(response => response.text())
     //   .then(result => console.log(result))
     //   .catch(error => console.log('error', error));
-    // // location.href = '/spaces'
-    const documentId = user.uid + query.query.id + 1
-    const documentRef = doc(db, 'players', documentId);
+    location.href = '/'
+    // const documentId = user.uid + query.query.id + 1
+    // const documentRef = doc(db, 'players', documentId);
 
 
-    console.log(documentId)
-    deleteDoc(documentRef)
-      .then(() => {
-        console.log('Document deleted successfully');
-      })
-      .catch((error) => {
-        console.error('Error deleting document: ', error);
-      });
+    // console.log(documentId)
+    // deleteDoc(documentRef)
+    //   .then(() => {
+    //     console.log('Document deleted successfully');
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error deleting document: ', error);
+    //   });
 
   }
 
@@ -570,10 +570,10 @@ export const UnityEnviroment = () => {
     addEventListener,
     removeEventListener,
   } = useUnityContext({
-    loaderUrl: "/Build/Build.loader.js",
-    dataUrl: "/Build/Build.data",
-    frameworkUrl: "/Build/Build.framework.js",
-    codeUrl: "/Build/Build.wasm",
+    loaderUrl: "/Build/EniverBuild.loader.js",
+    dataUrl: "/Build/EniverBuild.data",
+    frameworkUrl: "/Build/EniverBuild.framework.js",
+    codeUrl: "/Build/EniverBuild.wasm",
     webglContextAttributes: {
       preserveDrawingBuffer: true,
     },
@@ -660,16 +660,16 @@ export const UnityEnviroment = () => {
     // ModelLoader()
 
   }
-  const unityFullLoaded = useCallback(() => {
-    dispatch(AddLoading(true));
-  }, []);
+  // const unityFullLoaded = useCallback(() => {
+  //   dispatch(AddLoading(true));
+  // }, []);
 
-  useEffect(() => {
-    addEventListener("UserJoin", unityFullLoaded);
-    return () => {
-      removeEventListener("UserJoin", unityFullLoaded);
-    };
-  }, [unityFullLoaded, addEventListener, removeEventListener])
+  // useEffect(() => {
+  //   addEventListener("UserJoin", unityFullLoaded);
+  //   return () => {
+  //     removeEventListener("UserJoin", unityFullLoaded);
+  //   };
+  // }, [unityFullLoaded, addEventListener, removeEventListener])
 
 
 
