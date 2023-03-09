@@ -11,10 +11,10 @@ const Meta = () => {
         isLoaded,
         unload
       } = useUnityContext({
-        loaderUrl: "/Build/Build.loader.js",
-        dataUrl: "/Build/Build.data",
-        frameworkUrl: "/Build/Build.framework.js",
-        codeUrl: "/Build/Build.wasm",
+        loaderUrl: "/Build/EniverBuild.loader.js",
+        dataUrl: "/Build/EniverBuild.data",
+        frameworkUrl: "/Build/EniverBuild.framework.js",
+        codeUrl: "/Build/EniverBuild.wasm",
       });
 
   const loading = Math.round(loadingProgression * 100)

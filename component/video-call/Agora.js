@@ -28,7 +28,7 @@ const Content = ({ channelName, username }) => {
 
   const options = {
     // Pass your app ID here.
-    appId: "1c25b0229b224c48a05674551e80719b",
+    appId: "da36455629d94befb15574e5405e473a",
     // Set the channel name.
     channel: router.query.id,
     // Pass a token if your project enables the App Certificate.
@@ -224,7 +224,7 @@ export const Video = ({ user }) => {
 
   const stopVideo = () => {
     if (user.video) {
-      user.videoTrack.stop()
+      user.videoTrack?.stop()
     }
   }
 

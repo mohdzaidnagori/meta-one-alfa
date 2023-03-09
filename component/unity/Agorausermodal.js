@@ -46,7 +46,7 @@ const Agorausermodal = ({close}) => {
     </div>
     <div className="agora-user-container">
         {
-        agoraUser.map((user) => {
+        agoraUser?.map((user) => {
           // let text = user.uid
           // const str = text.split("cutdata")
           return (

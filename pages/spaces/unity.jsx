@@ -595,6 +595,7 @@ export const UnityEnviroment = () => {
     const unityJson = JSON.stringify(unityData)
     sendMessage("EnvironmentLoader", "MainModel", unityJson);
     sendMessage("GameController", "Turnoffkeyboard");
+
   }
   function handleCacheControl(url) {
     console.log(`Cache control for ${url}`);
@@ -677,21 +678,20 @@ export const UnityEnviroment = () => {
 
 
 
+    return (
+      <Fragment>
+        {!isLoaded && (
+          <Unityloader loading={loading} envirometname={query.query.name} />
+        )}
 
-  return (
-    <Fragment>
-      {!isLoaded && (
-        <Unityloader loading={loading} envirometname={query.query.name} />
-      )}
+        < Unity
+          unityProvider={unityProvider}
+          tabIndex={1}
+          style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
+        />
 
-      < Unity
-        unityProvider={unityProvider}
-        tabIndex={1}
-        style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
-      />
-
-    </Fragment>
-  )
+      </Fragment>
+    )
 }
 
 const Wrapper = () => {
