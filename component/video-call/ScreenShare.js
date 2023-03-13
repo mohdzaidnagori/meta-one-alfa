@@ -1,191 +1,190 @@
-import AgoraRTC from "agora-rtc-sdk-ng";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../router/AuthContext";
+import { useRef, useEffect } from 'react'
+import AgoraRTC from "agora-rtc-sdk-ng"
+import { GlobalProvider, useClient, useStart, useUsers, useSpeaking } from './GlobalContext';
+import { BsMicMute, BsMic, BsCameraVideo, BsCameraVideoOff } from 'react-icons/bs'
+import { GlobalShare, useShareClient, useShareStart, useShareUsers } from './GlobalShare';
+import { useAuth } from '../router/AuthContext';
+import { useRouter } from 'next/router';
+import { AgoraRTCErrorCode } from 'agora-rtc-react';
+
+const ScreenShare = () => {
+  const { user } = useAuth()
+  return (
+    <GlobalShare>
+      <Content channelName='main' username={user.displayName} />
+    </GlobalShare>
+  );
+}
+
+const Content = () => {
+  const setUsers = useShareUsers()[1]
+  const [start, setStart] = useShareStart(true)
+  const rtc = useShareClient()
+  const router = useRouter()
+  const {user} = useAuth()
+  const options = {
+    // Pass your app ID here.
+    appId: "da36455629d94befb15574e5405e473a",
+    // Set the channel name.
+    channel: 'main',
+    // Pass a token if your project enables the App Certificate.
+    token: null,
+  };
+  useEffect(() => {
+    try {
+      let init = async () => {
+        rtc.current.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
+        const initClientEvents = () => {
+          rtc.current.client.on("user-joined", async (user) => {
+            console.log(user)
+            // New User Enters
+            await setUsers((prevUsers) => {
+              return [...prevUsers, { uid: user.uid, audio: user.hasAudio, video: user.hasVideo, client: false }]
+            })
+          });
 
 
-function ScreenShare() {
-  //   const rtc = useRef({
-  //     client: null,
-  // });
-  //   const screenShareRef = useRef();
-  //   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  //   console.log(rtc)
-  // useEffect(() => {
-  //   try {
-  //     let init = async () => {
-  //       rtc.current.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+          rtc.current.client.on("user-published", async (user, mediaType) => {
+            await rtc.current.client.subscribe(user, mediaType);
+            if (mediaType === "video") {
+              const remoteVideoTrack = user.videoTrack;
+              await setUsers((prevUsers) => {
+                return (prevUsers.map((User) => {
+                  if (User.uid === user.uid) {
 
-  //     }
-  //     init()
-  //   } catch (error) {
-  //     alert(error)
-  //   }
-  // async function init() {
-  //   // Initialize the client
-  //   rtc.current.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-  //   await rtc.current.client.init('da36455629d94befb15574e5405e473a');
+                    return { ...User, video: user.hasAudio, screenTrack: remoteVideoTrack }
+                  }
+                  return User
+                }))
 
-  //   // Join a channel
-  //   await rtc.current.client.join(null, 'main', null);
+              })
+            }
 
-  //   // Create a screen share track
-  //   const screenShareTrack = await AgoraRTC.createScreenVideoTrack({
-  //     encoderConfig: '1080p_1',
-  //   });
+            if (mediaType === "audio") {
+              console.log('audio')
+              const remoteAudioTrack = user.audioTrack;
+              remoteAudioTrack.play();
+              await setUsers((prevUsers) => {
+                console.log(prevUsers)
+                return (prevUsers.map((User) => {
+                  if (User.uid === user.uid) {
+                    return { ...User, audio: user.hasAudio, audioTrack: remoteAudioTrack }
+                  }
+                  return User
+                }))
 
-  //   // Play the screen share track
-  //   screenShareTrack.play(screenShareRef.current);
+              })
+            }
+          });
 
-  //   // Publish the screen share track
-  //   const localScreenPublication = await rtc.current.client.publish(screenShareTrack);
+          rtc.current.client.on("user-unpublished", (user, type) => {
+            if (type === 'audio') {
+              setUsers(prevUsers => {
+                return (prevUsers.map((User) => {
+                  if (User.uid === user.uid) {
+                    return { ...User, audio: !User.audio }
+                  }
+                  return User
+                }))
+              })
+            }
+            if (type === 'video') {
+              setUsers(prevUsers => {
+                return (prevUsers.map((User) => {
+                  if (User.uid === user.uid) {
+                    return { ...User, video: !User.video }
+                  }
+                  return User
+                }))
+              })
+            }
+          });
 
-  //   // Subscribe to remote streams
-  //   client.on('user-published', async (user, mediaType) => {
-  //     await rtc.current.client.subscribe(user, mediaType);
-  //     if (mediaType === 'video') {
-  //       // Create a div for the remote stream
-  //       const remoteVideoStream = document.createElement('div');
-  //       remoteVideoStream.id = user.uid;
-  //       remoteVideoStream.style.width = '640px';
-  //       remoteVideoStream.style.height = '480px';
-  //       document.body.appendChild(remoteVideoStream);
-
-  //       // Play the remote stream
-  //       const remoteScreenTrack = user.videoTrack;
-  //       remoteScreenTrack.play(remoteVideoStream);
-  //     }
-  //   });
-  // }
-
-  // init();
-
-  // // Cleanup function
-  // return () => {
-  //   rtc.current.client.leave();
-  // };
-  // }, []);
-
-  // async function startScreenShare() {
-  //   setIsScreenSharing(true);
-  // }
-
-  // async function stopScreenShare() {
-  //   setIsScreenSharing(false);
-  // }
-
-const {user} = useAuth()
-
-
-
-
+          rtc.current.client.on("user-left", (user) => {
+            //User Leaves
+            setUsers((prevUsers) => {
+              return prevUsers.filter(User => User.uid !== user.uid)
+            })
+          });
+        }
+        initClientEvents()
+        setStart(true)
  
+  }
+      init()
+    } catch (error) {
+      console.log(error)
+    }
 
 
+  }, [])
+  console.log(users)
+  console.log(setUsers.uid)
+  const users = useShareUsers()[0]
 
+  const streamhandle = async () => {
 
-    const [isSharingEnabled, setIsSharingEnabled] = useState(false);
-    const [localPlayerContainer, setLocalPlayerContainer] = useState(null);
-    const [channelParameters, setChannelParameters] = useState({
-      screenTrack: null,
-      localVideoTrack: null,
+    // const uid = await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
+       
+    rtc.current.localScreenTrack = await AgoraRTC.createScreenVideoTrack({
+      encoderConfig: {
+        width: 1920,
+        height: 1080,
+        bitrate: 1.5 * 1024 * 1024,
+        frameRate: 15,
+      },
     });
-    const [agoraEngine, setAgoraEngine] = useState(null);
-    const [joined, setJoined] = useState(false);
-    const [remotePlayerContainers, setRemotePlayerContainers] = useState([]);
 
-    useEffect(() => {
-      // Initialize Agora engine
-      const engine = AgoraRTC.createClient({ mode: 'rtc', codec: 'h264', appId: 'da36455629d94befb15574e5405e473a' });
-      setAgoraEngine(engine);
-
-      // Create local video track
-      AgoraRTC.createCameraVideoTrack().then((localVideoTrack) => {
-        setChannelParameters((prev) => ({ ...prev, localVideoTrack }));
-        localVideoTrack.play('localPlayerContainer');
-      });
-
-      // Join channel
-      engine.join('da36455629d94befb15574e5405e473a', 'main', null).then(() => {
-        setJoined(true);
-      });
-
-      // Listen for remote tracks
-      engine.on('user-published', async (user, mediaType) => {
-        // Subscribe to remote track
-        await engine.subscribe(user, mediaType);
-        // Create a container for the remote player
-        const playerContainer = document.createElement('div');
-        playerContainer.id = `remotePlayerContainer${user.uid}`;
-        document.body.appendChild(playerContainer);
-        // Play the remote track on the remote player container
-        if (mediaType === 'video') {
-          user.videoTrack.play(playerContainer);
-        } else if (mediaType === 'screen') {
-          user.screenTrack.play(playerContainer);
-        }
-        setRemotePlayerContainers((prev) => [...prev, playerContainer]);
-      });
-
-      // Listen for remote users leaving the channel
-      engine.on('user-unpublished', (user, mediaType) => {
-        // Stop playing the remote track
-        if (mediaType === 'video') {
-          user.videoTrack?.stop();
-        } else if (mediaType === 'screen') {
-          user.screenTrack?.stop();
-        }
-        // Remove the remote player container from the DOM
-        const playerContainer = document.getElementById(`remotePlayerContainer${user.uid}`);
-        playerContainer && playerContainer.remove();
-        setRemotePlayerContainers((prev) =>
-          prev.filter((container) => container.id !== `remotePlayerContainer${user.uid}`)
-        );
-      });
-
-      return () => {
-        // Cleanup
-        engine && engine.leave();
-        channelParameters.localVideoTrack && channelParameters.localVideoTrack.stop();
-        remotePlayerContainers.forEach((container) => container.remove());
-      };
-    }, []);
-
-    const toggleScreenShare = async () => {
-      if (isSharingEnabled) {
-        // Stop screen sharing
-        await agoraEngine.unpublish(channelParameters.screenTrack);
-        channelParameters.screenTrack.close();
-        setChannelParameters((prev) => ({ ...prev, screenTrack: null }));
-        setIsSharingEnabled(false);
-      } else {
-        // Start screen sharing
-        const screenTrack = await AgoraRTC.createScreenVideoTrack();
-        await agoraEngine.publish(screenTrack);
-        setChannelParameters((prev) => ({ ...prev, screenTrack }));
-        setIsSharingEnabled(true);
-      }
-    };
-
-    return (
-      <div>
-        {/* {isScreenSharing ? (
-        <button onClick={stopScreenShare}>Stop screen share</button>
-      ) : (
-        <button onClick={startScreenShare}>Start screen share</button>
-      )}
-      <div ref={screenShareRef}></div> */}
-        <div id="localPlayerContainer" className="local-player-container" ref={setLocalPlayerContainer} />
-        <button onClick={toggleScreenShare}>
-          {isSharingEnabled ? 'Stop Screen Share' : 'Start Screen Share'}
-        </button>
-        <div className="remote-players-container">
-          {remotePlayerContainers.map((container) => (
-            <div key={container.id} className="remote-player-container" ref={() => container} />
-          ))}
-        </div>
-      </div>
-
-    );
+    setUsers((prevUsers) => {
+      return [...prevUsers, { uid: user.uid, client: true,audio: true, video: true, screenTrack:rtc.current.localScreenTrack}]
+    })
+    //Publishing your Streams
+    await rtc.current.client.publish([rtc.current.localScreenTrack]);
   }
 
-  export default ScreenShare;
+  return (
+    <div className="App-1">
+      {<div id="videos-1">
+      {users.length && users.map((user) => <Video key={user.uid} user={user} />)}
+    </div>}
+    <button onClick={streamhandle}>stream</button>
+    </div>
+  
+ )
+}
+
+export const Video = ({ user }) => {
+  console.log(user)
+  const vidDiv = useRef(null)
+  const playVideo = () => {
+      user.screenTrack?.play(vidDiv.current)
+      console.log(vidDiv.current)
+  }
+
+  const stopVideo = () => {
+    if (user.video) {
+      user.screenTrack?.stop()
+    }
+  }
+
+  useEffect(() => {
+    playVideo()
+    // return () => {
+    //   stopVideo()
+    // }
+    // eslint-disable-next-line
+  }, [])
+ console.log(vidDiv)
+  return (
+    <div className='vid-1' style={{width:'500px',height:'500px'}} ref={vidDiv} >
+        
+    </div>
+  )
+}
+
+
+
+export default ScreenShare;
+
+

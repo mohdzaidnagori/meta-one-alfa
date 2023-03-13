@@ -51,7 +51,6 @@ const Content = ({ channelName, username }) => {
 
           rtc.current.client.on("user-published", async (user, mediaType) => {
             await rtc.current.client.subscribe(user, mediaType);
-
             if (mediaType === "video") {
               const remoteVideoTrack = user.videoTrack;
               await setUsers((prevUsers) => {
@@ -129,9 +128,12 @@ const Content = ({ channelName, username }) => {
   
             // Create a video track from the video captured by a camera.
             rtc.current.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+
+
+           
             //Adding a User to the Users State
             setUsers((prevUsers) => {
-              return [...prevUsers, { uid: uid, audio: true, video: true, client: true, videoTrack: rtc.current.localVideoTrack, audioTrack: rtc.current.localAudioTrack }]
+              return [...prevUsers, { uid: uid, audio: true, video: true, client: true, videoTrack: rtc.current.localVideoTrack, audioTrack: rtc.current.localAudioTrack}]
             })
             //Publishing your Streams
             await rtc.current.client.publish([rtc.current.localAudioTrack, rtc.current.localVideoTrack]);
@@ -139,8 +141,9 @@ const Content = ({ channelName, username }) => {
           } catch (error) {
             console.log(error)
             rtc.current.localVideoTrack = null;
+           
             setUsers((prevUsers) => {
-              return [...prevUsers, { uid: uid, audio: true, video: false, client: true, audioTrack: rtc.current.localAudioTrack }]
+              return [...prevUsers, { uid: uid, audio: true, video: false, client: true, audioTrack: rtc.current.localAudioTrack}]
             });
             await rtc.current.client.publish([rtc.current.localAudioTrack]);
             setStart(true);

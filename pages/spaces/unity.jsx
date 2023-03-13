@@ -544,7 +544,7 @@ export const Unitypage = ({ children, enviroment }) => {
 
 
       <div className="unity-scene">
-        {enviroment}
+        {enviroment} 
 
       </div>
 
@@ -658,6 +658,7 @@ export const UnityEnviroment = () => {
   if (isLoaded && capture.length === 0) {
     // CreateAndJoinRooms()
     EnvironmentLoader()
+    CreateAndJoinRooms()
     // ModelLoader()
 
   }

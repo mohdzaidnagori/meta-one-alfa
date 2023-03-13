@@ -6,7 +6,7 @@ const test = () => {
     const App = dynamic(import('../../component/video-call/ScreenShare'), { ssr: false });
     const AppMemo = memo(App);
   return (
-    <div><AppMemo /></div>
+    <div><AppMemo channelName={'main'}/></div>
   )
 }
 

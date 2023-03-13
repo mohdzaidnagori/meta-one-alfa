@@ -56,7 +56,8 @@ export const GlobalProvider = ({ children }) => {
         // For the local audio and video tracks.
         localAudioTrack: null,
         localVideoTrack: null,
-        checkSpeakingInterval: null
+        checkSpeakingInterval: null,
+        screenTrack:null
     });
     const [speaking, setSpeaking] = useState(false)
     return (
