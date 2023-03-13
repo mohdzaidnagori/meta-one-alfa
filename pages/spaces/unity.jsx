@@ -658,7 +658,7 @@ export const UnityEnviroment = () => {
   if (isLoaded && capture.length === 0) {
     // CreateAndJoinRooms()
     EnvironmentLoader()
-    CreateAndJoinRooms()
+    // CreateAndJoinRooms()
     // ModelLoader()
 
   }

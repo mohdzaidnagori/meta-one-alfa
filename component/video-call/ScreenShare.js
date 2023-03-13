@@ -37,15 +37,16 @@ const Content = () => {
         await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
         const initClientEvents = () => {
           rtc.current.client.on("user-joined", async (user) => {
-            console.log(user)
+           
             // New User Enters
             await setUsers((prevUsers) => {
-              return [...prevUsers, { uid: user.uid, audio: user.hasAudio, video: user.hasVideo, client: false }]
+              return [...prevUsers, { uid: user.uid, video: user.hasVideo, client: false }]
             })
           });
 
 
           rtc.current.client.on("user-published", async (user, mediaType) => {
+            console.log(user)
             await rtc.current.client.subscribe(user, mediaType);
             if (mediaType === "video") {
               const remoteVideoTrack = user.videoTrack;
@@ -53,7 +54,7 @@ const Content = () => {
                 return (prevUsers.map((User) => {
                   if (User.uid === user.uid) {
 
-                    return { ...User, video: user.hasAudio, screenTrack: remoteVideoTrack }
+                    return { ...User, video: true, screenTrack: remoteVideoTrack }
                   }
                   return User
                 }))
@@ -61,34 +62,9 @@ const Content = () => {
               })
             }
 
-            if (mediaType === "audio") {
-              console.log('audio')
-              const remoteAudioTrack = user.audioTrack;
-              remoteAudioTrack.play();
-              await setUsers((prevUsers) => {
-                console.log(prevUsers)
-                return (prevUsers.map((User) => {
-                  if (User.uid === user.uid) {
-                    return { ...User, audio: user.hasAudio, audioTrack: remoteAudioTrack }
-                  }
-                  return User
-                }))
-
-              })
-            }
           });
 
           rtc.current.client.on("user-unpublished", (user, type) => {
-            if (type === 'audio') {
-              setUsers(prevUsers => {
-                return (prevUsers.map((User) => {
-                  if (User.uid === user.uid) {
-                    return { ...User, audio: !User.audio }
-                  }
-                  return User
-                }))
-              })
-            }
             if (type === 'video') {
               setUsers(prevUsers => {
                 return (prevUsers.map((User) => {
@@ -118,10 +94,11 @@ const Content = () => {
     }
 
 
-  }, [])
-  console.log(users)
+  }, [useShareUsers()[0].uid])
+
   console.log(setUsers.uid)
   const users = useShareUsers()[0]
+  console.log(users)
 
   const streamhandle = async () => {
 
@@ -137,7 +114,7 @@ const Content = () => {
     });
 
     setUsers((prevUsers) => {
-      return [...prevUsers, { uid: user.uid, client: true,audio: true, video: true, screenTrack:rtc.current.localScreenTrack}]
+      return [...prevUsers, { uid: user.displayName, client: true, video: true, screenTrack:rtc.current.localScreenTrack}]
     })
     //Publishing your Streams
     await rtc.current.client.publish([rtc.current.localScreenTrack]);
@@ -146,7 +123,7 @@ const Content = () => {
   return (
     <div className="App-1">
       {<div id="videos-1">
-      {users.length && users.map((user) => <Video key={user.uid} user={user} />)}
+      {users.length && users.map((user) =>  <Video key={user.uid} user={user} />)}
     </div>}
     <button onClick={streamhandle}>stream</button>
     </div>
@@ -158,26 +135,28 @@ export const Video = ({ user }) => {
   console.log(user)
   const vidDiv = useRef(null)
   const playVideo = () => {
-      user.screenTrack?.play(vidDiv.current)
-      console.log(vidDiv.current)
+      if(user.video && !user.client){
+        user.screenTrack?.play(vidDiv.current)
+        console.log(vidDiv.current)
+      }
   }
-
+  playVideo()
   const stopVideo = () => {
     if (user.video) {
       user.screenTrack?.stop()
     }
   }
 
-  useEffect(() => {
-    playVideo()
-    // return () => {
-    //   stopVideo()
-    // }
-    // eslint-disable-next-line
-  }, [])
- console.log(vidDiv)
+  // useEffect(() => {
+  //   playVideo()
+  //   // return () => {
+  //   //   stopVideo()
+  //   // }
+  //   // eslint-disable-next-line
+  // }, [user.video])
+ console.log(user.video)
   return (
-    <div className='vid-1' style={{width:'500px',height:'500px'}} ref={vidDiv} >
+    <div className='vid-1' style={{width:!user.video || user.client ? '0px' : '500px',height:!user.video || user.client? '0px' : '500px'}} ref={vidDiv} >
         
     </div>
   )
