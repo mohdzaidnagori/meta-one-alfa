@@ -238,9 +238,9 @@ export const Video = ({ user }) => {
     }
     // eslint-disable-next-line
   }, [user.video])
-
+console.log(user)
   return (
-    <div className='vid-1' ref={vidDiv} >
+    <div className='vid-1' data-icon={user.uid.charAt(0)} ref={vidDiv} >
       <Controls user={user} />
     </div>
   )
@@ -346,7 +346,7 @@ export const Controls = ({ user }) => {
   return (
     <>
       {
-        <div className="mic-container-show">
+        <div className={`mic-container-show ${!user?.video && 'data-icon-user-not'}`} data-icon={user?.uid.charAt(0)} >
           <div className='user-mic-show'>
             {user.audio ? <BsMic /> : <BsMicMute />}
           </div>

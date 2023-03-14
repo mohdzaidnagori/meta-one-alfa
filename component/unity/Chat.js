@@ -50,7 +50,7 @@ const Chat = ({ open, close }) => {
           timestamp: serverTimestamp()
         });
         ref.current.scrollTo({
-          top: document.documentElement.scrollHeight * 10,
+          top: document.documentElement.scrollHeight * 60,
           behavior: 'smooth',
         });
         console.log("Document written with ID: ", docRef.id);
@@ -65,10 +65,11 @@ const Chat = ({ open, close }) => {
 
   useEffect(() => {
     ref.current.scrollTo({
-      top: document.documentElement.scrollHeight * 50,
+      top: document.documentElement.scrollHeight * getData.length,
       behavior: 'smooth',
     });
-  }, [getData])
+    console.log(getData.length+'useeffecet run')
+  }, [getData,open])
   useEffect(() => {
     if (!query.isReady) return;
     console.log(query.isReady)

@@ -1,7 +1,5 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import AgoraRTC from "agora-rtc-sdk-ng"
-import { GlobalProvider, useClient, useStart, useUsers, useSpeaking } from './GlobalContext';
-import { BsMicMute, BsMic, BsCameraVideo, BsCameraVideoOff } from 'react-icons/bs'
 import { GlobalShare, useShareClient, useShareStart, useShareUsers } from './GlobalShare';
 import { useAuth } from '../router/AuthContext';
 import { useRouter } from 'next/router';
@@ -94,11 +92,14 @@ const Content = () => {
     }
 
 
-  }, [useShareUsers()[0].uid])
+  }, [])
 
-  console.log(setUsers.uid)
+
+  const [element,setElement] = useState([])
   const users = useShareUsers()[0]
-  console.log(users)
+  useEffect(() => {
+    setElement(users);
+  }, [users]);
 
   const streamhandle = async () => {
 
@@ -119,46 +120,80 @@ const Content = () => {
     //Publishing your Streams
     await rtc.current.client.publish([rtc.current.localScreenTrack]);
   }
-
+ 
+  const [lastClickedIndex, setLastClickedIndex] = useState(null);
+  const hadlearrayPostion = (index) => {
+    if (lastClickedIndex !== null && index === lastClickedIndex) {
+      // if the same index was clicked twice, don't do anything
+      return;
+    }
+      const newArray = [...users];
+      const clickedItem = newArray.splice(index, 1)[0];
+      newArray.unshift(clickedItem);
+      setElement(newArray);
+      console.log(index)
+      setLastClickedIndex(index);
+  }
+  console.log(element)
   return (
-    <div className="App-1">
-      {<div id="videos-1">
-      {users.length && users.map((user) =>  <Video key={user.uid} user={user} />)}
-    </div>}
+  
+    <div className='main-body'>
+    <div className="xxx-main-conatiner">
+    <div className="row gy-0 gx-0">
+      {element.length && element.map((user,index) =>  <Video onClick={() => hadlearrayPostion(index)} key={user.uid} user={user} index={index} />)}
+    </div>
     <button onClick={streamhandle}>stream</button>
+    </div>
     </div>
   
  )
 }
 
-export const Video = ({ user }) => {
-  console.log(user)
+export const Video = ({ user,index,onClick }) => {
   const vidDiv = useRef(null)
   const playVideo = () => {
       if(user.video && !user.client){
         user.screenTrack?.play(vidDiv.current)
-        console.log(vidDiv.current)
       }
   }
-  playVideo()
+  // playVideo()
   const stopVideo = () => {
-    if (user.video) {
       user.screenTrack?.stop()
-    }
+    
   }
 
-  // useEffect(() => {
-  //   playVideo()
-  //   // return () => {
-  //   //   stopVideo()
-  //   // }
-  //   // eslint-disable-next-line
-  // }, [user.video])
- console.log(user.video)
+  useEffect(() => {
+    playVideo()
+    return () => {
+      stopVideo()
+    }
+  
+
+  }, [user.video,user.client,onClick,index])
+
+  const handleClick = () => {
+    onClick(index); // Call the onClick handler with the index value
+  };
+
   return (
-    <div className='vid-1' style={{width:!user.video || user.client ? '0px' : '500px',height:!user.video || user.client? '0px' : '500px'}} ref={vidDiv} >
-        
-    </div>
+    <>
+ 
+    
+        {
+                index === 0 ? 
+               <div onClick={handleClick} key={index} className="col-md-12 agora_video_player-parents" data-uid={user.uid} data-icon={user.uid.charAt(0)} style={{height:'600px'}}>
+               <div   style={{width:'100%',height:'100%'}} ref={vidDiv} > 
+                </div>
+               </div>
+                :
+                <div onClick={handleClick} key={index} className="col-md-2 agora_video_player-child" data-uid={user.uid} data-icon={user.uid.charAt(0)} style={{height:'100px'}}>
+                {/* <div className='vid-1' style={{width:!user.video || user.client ? '0px' : '500px',height:!user.video || user.client? '0px' : '500px'}} ref={vidDiv} >  */}
+                <div   style={{width:'100%',height:'100%'}} ref={vidDiv} > 
+                </div>
+                </div>
+                 }
+         
+  </>
   )
 }
 
