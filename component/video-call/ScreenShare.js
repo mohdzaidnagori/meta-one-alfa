@@ -102,9 +102,14 @@ const Content = () => {
   }, [users]);
 
   const streamhandle = async () => {
-
+    if (rtc.current.localScreenTrack) {
+      await rtc.current.client.unpublish([rtc.current.localScreenTrack]);
+      rtc.current.localScreenTrack.stop();
+      setUsers((prevUsers) => {
+        return prevUsers.filter(User => User.uid !== user.displayName)
+      })
+    }
     // const uid = await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
-       
     rtc.current.localScreenTrack = await AgoraRTC.createScreenVideoTrack({
       encoderConfig: {
         width: 1920,
