@@ -64,16 +64,32 @@ export const loadingSlice = createSlice({
         }
     }
 })
+export const ShareClose = createSlice({
+    name:"screenShareModal",
+    initialState:{isShare:false},
+    reducers:{
+        closeScreenModal: (state) => {
+            state.isShare = false;
+          },
+          openScreenModal: (state) => {
+            state.isShare = true;
+          },
+    }
+})
 
 export const { create: AddUser } = userSlice.actions;
 export const { create: AddCapture } = captureSlice.actions;
 export const { create: AddNote,DeleteNote } = notesSlice.actions;
 export const { create: AddLoading } = loadingSlice.actions;
+export const { closeScreenModal, openScreenModal } = ShareClose.actions;
+
+
 const reducer = {
     notes: notesSlice.reducer,
     users:userSlice.reducer,
     capture:captureSlice.reducer,
-    loading:loadingSlice.reducer
+    loading:loadingSlice.reducer,
+    screenShareModal:ShareClose.reducer
 };
 const middleware = [...getDefaultMiddleware()];
 export default configureStore({

@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Agorausermodal from "../../component/unity/Agorausermodal";
 import Chat from "../../component/unity/Chat";
 import { saveAs } from 'file-saver'
-import { AddCapture, AddLoading } from "../../component/redux/CounterSlice";
+import { AddCapture, AddLoading, openScreenModal } from "../../component/redux/CounterSlice";
 import Directionmodal from "../../component/unity/Directionmodal";
 import { query as FireQuery } from 'firebase/firestore'
 import axios from "axios";
@@ -37,7 +37,7 @@ import axios from "axios";
 
 
 
-export const Unitypage = ({ children, enviroment }) => {
+export const Unitypage = ({ children, enviroment}) => {
   const { user } = useAuth()
   const query = useRouter()
 
@@ -78,6 +78,7 @@ export const Unitypage = ({ children, enviroment }) => {
   const [hidebehindButtonChat, setHidebehindButtonChat] = useState(false)
   const [hidebehindButtonVideo, setHidebehindButtonVideo] = useState(false)
   const [directionModal, setDirectionModal] = useState(false)
+ 
 
 
 
@@ -365,16 +366,18 @@ export const Unitypage = ({ children, enviroment }) => {
     setHidebehindButtonChat(true)
   }
   const readfilter = messages.filter((message) => message.sender !== user.uid && !message.read)
-  console.log(readfilter)
+  const isOpenScreen = useSelector((state) => state.screenShareModal.isShare);
   return (
     <div className="unity-scene-spaces">
       <Toaster />
-
+      
       <div className='SidebarBox-unity-top-right'>
         <Chat open={showChat} close={chatHandle} />
       </div>
 
-
+      <div className="screen-container"  style={{ opacity: isOpenScreen ? '1' : '0' }}>
+       {children[1]}
+      </div>
       <div className='SidebarBox-unity-top-left'>
         <motion.div
           variants={sidebarVariants}
@@ -383,7 +386,7 @@ export const Unitypage = ({ children, enviroment }) => {
           <div className="sidebar-container">
             {
               agoraShow ?
-                children
+                children[0]
                 : ''
             }
 
@@ -402,7 +405,6 @@ export const Unitypage = ({ children, enviroment }) => {
           <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
         </div>}
           {/* loading[loading.length -1] &&  */}
-         (
           <div className="unity-interaction-container">
             <div className="unity-interactions">
               {
@@ -523,6 +525,7 @@ export const Unitypage = ({ children, enviroment }) => {
                 <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
 
                   <div className={directionModal ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Help" onClick={directionModalHandle}><BiDirections /></div>
+                  <div className={isOpenScreen ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Screen Share" onClick={() => dispatch(openScreenModal())}><MdOutlineScreenShare /></div>
                   <div onClick={ChatOpenhandle} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat />
                     {readfilter.length > 0 &&
                       <span className="chat-notifications-count"></span>
@@ -535,7 +538,7 @@ export const Unitypage = ({ children, enviroment }) => {
               </div>
             </div>
           </div>
-        )
+        
       {/* } */}
     
    
@@ -544,7 +547,7 @@ export const Unitypage = ({ children, enviroment }) => {
 
 
       <div className="unity-scene">
-        {enviroment} 
+         {enviroment}
 
       </div>
 
@@ -695,17 +698,24 @@ export const UnityEnviroment = () => {
     )
 }
 
+
+
+
+
 const Wrapper = () => {
   const App = dynamic(import('../../component/video-call/Agora'), { ssr: false });
   const query = useRouter()
   const AppMemo = memo(App);
   const UnityEnviromentMemo = memo(UnityEnviroment)
+  const ScreenApp = dynamic(import('../../component/video-call/ScreenShare'), { ssr: false });
+  const ScreenMemo = memo(ScreenApp);
 
 
 
   return (
     <Unitypage enviroment={<UnityEnviromentMemo />} >
-      <AppMemo channelName={query.query.id} />
+      <AppMemo channelName={query.query.id}  />
+      <ScreenMemo />
     </Unitypage>
   )
 
@@ -713,6 +723,3 @@ const Wrapper = () => {
 
 }
 export default Wrapper
-
-
-
