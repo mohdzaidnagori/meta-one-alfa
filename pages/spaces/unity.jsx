@@ -548,7 +548,6 @@ export const Unitypage = ({ children, enviroment}) => {
 
       <div className="unity-scene">
          {enviroment}
-
       </div>
 
     </div>
