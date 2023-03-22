@@ -2147,6 +2147,7 @@ input[type=range]::-webkit-slider-runnable-track {
   background-color: #fff;
   padding: 10px;
   z-index: 500;
+  box-shadow: 0 13.689px 27.3779px rgb(0 0 0 / 40%);
 }
 .screen-main-conatiner-close{
   position: absolute;
@@ -2155,6 +2156,7 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   z-index: 900;
   background-color: #fff;
+  color: black;
   border-radius: 8px;
 }
 .screen-share-position{

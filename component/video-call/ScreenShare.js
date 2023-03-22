@@ -39,15 +39,17 @@ const Content = () => {
 
   // The user ID for this user
   const userId = 0;
- 
- 
+  const [element, setElement] = useState([])
+  const [StreamStart, setStreamStart] = useState(false)
+  const users = useShareUsers()[0]
+
   useEffect(() => {
-   
-      let init = async () => {
-        try {
+
+    let init = async () => {
+      try {
         const token = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, RtcRole.PUBLISHER, Math.floor(Date.now() / 1000) + 86400);
         rtc.current.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        await rtc.current.client.join(appId, channelName,token,user.displayName);
+        await rtc.current.client.join(appId, channelName, token, user.displayName);
         const initClientEvents = () => {
           rtc.current.client.on("user-joined", async (user) => {
 
@@ -95,6 +97,8 @@ const Content = () => {
               return prevUsers.filter(User => User.uid !== user.uid)
             })
           });
+
+
         }
         initClientEvents()
 
@@ -104,54 +108,67 @@ const Content = () => {
         })
 
 
-    } catch (error) {
-      console.log(error)
+      } catch (error) {
+        console.log(error)
+      }
     }
-  }
     init()
   }, [])
 
 
-  const [element, setElement] = useState([])
-  const [StreamStart, setStreamStart] = useState(true)
-  const users = useShareUsers()[0]
+
 
   useEffect(() => {
     setElement(users);
   }, [users]);
 
-  useEffect(() => {
-    if (rtc.current.localScreenTrack) {
-      setStreamStart(false)
-    }
-  }, [users])
+  // useEffect(() => {
+  //   console.log(users)
+  //   console.log(rtc.current.localScreenTrack) 
+  //   if (rtc.current.localScreenTrack) {
+  //     setStreamStart(false)
+  //   }
+  //   else{
+  //     setStreamStart(true)
+  //   }
+  // }, [users])
 
   const streamhandle = async () => {
     setUsers((prevUsers) => {
       return prevUsers.filter(User => User.uid !== user.displayName)
     })
-    if (rtc.current.localScreenTrack) {
-      await rtc.current.client.unpublish([rtc.current.localScreenTrack]);
-      rtc.current.localScreenTrack.stop();
-      setUsers((prevUsers) => {
-        return prevUsers.filter(User => User.uid !== user.displayName)
-      })
+    if (StreamStart) {
+      if (rtc.current.localScreenTrack) {
+        await rtc.current.client.unpublish([rtc.current.localScreenTrack]);
+        rtc.current.localScreenTrack.stop();
+        rtc.current.localScreenTrack.close();
+        setUsers((prevUsers) => {
+          return prevUsers.filter(User => User.uid !== user.displayName)
+        })
+        setUsers((prevUsers) => {
+          return [...prevUsers, { uid: user.displayName, client: true, video: true }]
+        })
+      }
+      setStreamStart(false)
     }
-    // const uid = await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
-    rtc.current.localScreenTrack = await AgoraRTC.createScreenVideoTrack({
-      encoderConfig: {
-        width: 1920,
-        height: 1080,
-        bitrate: 1.5 * 1024 * 1024,
-        frameRate: 15,
-      },
-    });
+    else {
+      // const uid = await rtc.current.client.join(options.appId, options.channel, options.token, user.displayName);
+      rtc.current.localScreenTrack = await AgoraRTC.createScreenVideoTrack({
+        encoderConfig: {
+          width: 1920,
+          height: 1080,
+          bitrate: 1.5 * 1024 * 1024,
+          frameRate: 15,
+        },
+      });
 
-    setUsers((prevUsers) => {
-      return [...prevUsers, { uid: user.displayName, client: true, video: true, screenTrack: rtc.current.localScreenTrack, name: user.displayName }]
-    })
-    //Publishing your Streams
-    await rtc.current.client.publish([rtc.current.localScreenTrack]);
+      setUsers((prevUsers) => {
+        return [...prevUsers, { uid: user.displayName, client: true, video: true, screenTrack: rtc.current.localScreenTrack, name: user.displayName }]
+      })
+      //Publishing your Streams
+      await rtc.current.client.publish([rtc.current.localScreenTrack]);
+      setStreamStart(true)
+    }
   }
 
   const [lastClickedIndex, setLastClickedIndex] = useState(null);
@@ -170,16 +187,22 @@ const Content = () => {
   const dispatch = useDispatch()
   return (
 
-      <div className="screen-main-conatiner">
-        <span onClick={() => dispatch(closeScreenModal())} className='screen-main-conatiner-close' ><AiOutlineClose /></span>
-        <div className="row gy-0 gx-0">
-          {element.length !== 0 && element.map((user, index) => <Video onClick={() => hadlearrayPostion(index)} key={user.uid} user={user} index={index} />)}
-        </div>
-        {
-          StreamStart && <button className='spaces-new screen-share-position' style={{ width: 'max-content', paddingInline: '20px' }} onClick={streamhandle}>Share Your Screen Here</button>
-        }
-
+    <div className="screen-main-conatiner">
+      <span onClick={() => dispatch(closeScreenModal())} className='screen-main-conatiner-close' ><AiOutlineClose /></span>
+      <div className="row gy-0 gx-0">
+        {element.length !== 0 && element.map((user, index) => <Video onClick={() => hadlearrayPostion(index)} key={user.uid} user={user} index={index} />)}
       </div>
+        <button className='spaces-new screen-share-position' style={{ width: 'max-content', paddingInline: '20px' }} onClick={streamhandle}>
+        {
+          StreamStart
+         ? 
+         'Stop Parsenting'
+         :
+         'Share Your Screen'
+        }
+        </button>
+
+    </div>
 
   )
 }
@@ -247,7 +270,7 @@ export const Video = ({ user, index, onClick }) => {
           <div onClick={handleClick} key={index} className="col-md-12 agora_video_player-parents" data-uid={user.uid} data-icon={user.uid.charAt(0)} style={{ height: '500px' }}>
             <div style={{ width: '100%', height: '100%', backgroundColor: Color }} ref={vidDiv} >
             </div>
-            
+
           </div>
           :
           <div onClick={handleClick} key={index} className="col-md-2 agora_video_player-child" data-uid={user.uid} data-icon={user.uid.charAt(0)} style={{ height: '100px' }}>
