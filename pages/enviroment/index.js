@@ -38,7 +38,7 @@ const Enviroment = () => {
                     enviromentData &&
                     enviromentData.map((item) => {
                         return (
-                            <div className="enviroment-card-child" onClick={() => handleenviroment(item.num)}>
+                            <div className="enviroment-card-child" key={item.num} onClick={() => handleenviroment(item.num)}>
                                 <div className="enviroment-card-image">
                                     <Image src={item.url} layout='fill'alt={`enviroment${item.num}`}/>
                                 </div>
