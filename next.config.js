@@ -2,7 +2,15 @@
 const nextConfig = {
   swcMinify: true,
   images: {
-    domains: ['firebasestorage.googleapis.com','spatial.io','cdn.spatial.io','lh3.googleusercontent.com','randomuser.me','cloudflare-ipfs.com'],
+    domains: [
+    'firebasestorage.googleapis.com',
+    'spatial.io',
+    'cdn.spatial.io',
+    'lh3.googleusercontent.com',
+    'randomuser.me',
+    'cloudflare-ipfs.com',
+    'i.ibb.co'
+  ],
   },
 }
 

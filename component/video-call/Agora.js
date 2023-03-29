@@ -262,7 +262,7 @@ export const Controls = ({ user }) => {
     setUsers([])
     clearInterval(rtc.current.checkAudio)
     setStart(false)
-    location.href = '/spaces'
+    location.href = '/enviroment'
   }
 
   useEffect(() => {

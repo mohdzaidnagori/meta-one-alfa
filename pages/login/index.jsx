@@ -23,7 +23,7 @@ const Index = () => {
 
   useEffect(() => {
     if (user) {
-      router.push('/spaces/unity?type=spaces&id=7qSoNOGTi5XHzFpGGpBA&name=MOHD+ZAID+GARDAN&sceneId=v0qkneychmlRlMPqBCIY')  
+      router.push('/enviroment')  
     }
   }, [router,user])
 
@@ -51,7 +51,7 @@ const Index = () => {
         router.push(items)
       }
       else{
-        router.push('/spaces')
+        router.push('/enviroment')
       }
      
     }, 1000);

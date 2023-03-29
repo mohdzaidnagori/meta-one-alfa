@@ -183,7 +183,7 @@ export const Unitypage = ({ children, enviroment}) => {
     //   .then(response => response.text())
     //   .then(result => console.log(result))
     //   .catch(error => console.log('error', error));
-    location.href = '/'
+    location.href = '/enviroment'
     // const documentId = user.uid + query.query.id + 1
     // const documentRef = doc(db, 'players', documentId);
 
@@ -555,9 +555,7 @@ export const Unitypage = ({ children, enviroment}) => {
   )
 }
 export const UnityEnviroment = () => {
-  const notes = useSelector((state) => state.notes.notes);
   const capture = useSelector((state) => state.capture.capture);
-  const [FullLoaded, setFullLoaded] = useState(false);
   const { user } = useAuth()
   const query = useRouter()
   const {
@@ -572,16 +570,15 @@ export const UnityEnviroment = () => {
     addEventListener,
     removeEventListener,
   } = useUnityContext({
-    loaderUrl: "/Build/EniverBuild.loader.js",
-    dataUrl: "/Build/EniverBuild.data",
-    frameworkUrl: "/Build/EniverBuild.framework.js",
-    codeUrl: "/Build/EniverBuild.wasm",
+    loaderUrl: "/Build/Build.loader.js",
+    dataUrl: "/Build/Build.data",
+    frameworkUrl: "/Build/Build.framework.js",
+    codeUrl: "/Build/Build.wasm",
     webglContextAttributes: {
       preserveDrawingBuffer: true,
     },
     cacheControl: handleCacheControl,
   });
-  const dispatch = useDispatch();
   const loading = Math.round(loadingProgression * 100)
 
   if (capture[capture.length - 1] === true) {
@@ -593,10 +590,8 @@ export const UnityEnviroment = () => {
 
 
   const EnvironmentLoader = () => {
-    const unityData = { id: 'v0qkneychmlRlMPqBCIY', type: 'spaces',playerName:user.id }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("EnvironmentLoader", "MainModel", unityJson);
-    sendMessage("GameController", "Turnoffkeyboard");
+    sendMessage("GameController", "SelectModel", query.query.numb);
+    // sendMessage("GameController", "Turnoffkeyboard");
 
   }
   function handleCacheControl(url) {
@@ -607,78 +602,26 @@ export const UnityEnviroment = () => {
 
 
 
-  const ModelLoader = () => {
-    const unityData = { id: query.query.id, type: 'spaces', }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("ModelLoader", "OtherModel", unityJson);
-    sendMessage("FileLoader", "OtherFiles", unityJson);
-
-  }
-
-
-  const CreateAndJoinRooms = () => {
-    const unityData = { roomID: query.query.id, playerID: user.uid }
-    const unityJson = JSON.stringify(unityData)
-    sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
-  }
-
-
-  // // GameObject And Class Name : ImageLoader / Function Name : ImgLoader
-
-  // const ImageUploader = () => {
-  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+  // const ModelLoader = () => {
+  //   const unityData = { id: query.query.id, type: 'spaces', }
   //   const unityJson = JSON.stringify(unityData)
-  //   sendMessage("ImageLoader", "ImgLoader", unityJson);
-  //   console.log('image uploader')
+  //   sendMessage("ModelLoader", "OtherModel", unityJson);
+  //   sendMessage("FileLoader", "OtherFiles", unityJson);
+
   // }
-  // const VideoUploader = () => {
-  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
+
+
+  // const CreateAndJoinRooms = () => {
+  //   const unityData = { roomID: query.query.id, playerID: user.uid }
   //   const unityJson = JSON.stringify(unityData)
-  //   sendMessage("VideoLoad", "VideoLoader", unityJson);
-  //   console.log('video uploader')
-  // }
-  // const GlbUploader = () => {
-  //   const unityData = { id: notes[notes.length - 1]?.id, url: notes[notes.length - 1]?.url }
-  //   const unityJson = JSON.stringify(unityData)
-  //   sendMessage("UploadedModelLoader", "UplodedModel", unityJson);
-  //   console.log('glb uploader')
+  //   sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
   // }
 
 
-
-  //   console.log('unity running')
-  // if (notes[notes.length - 1]?.type === 'img') {
-  //   ImageUploader()
-  // }
-  // else if (notes[notes.length - 1]?.type === 'video') {
-  //   VideoUploader()
-  // }
-  // else if (notes[notes.length - 1]?.type === 'glb') {
-  //   GlbUploader()
-  // }
-  // && notes.length === 0
   if (isLoaded && capture.length === 0) {
-    // CreateAndJoinRooms()
     EnvironmentLoader()
-    // CreateAndJoinRooms()
-    // ModelLoader()
-
   }
-  // const unityFullLoaded = useCallback(() => {
-  //   dispatch(AddLoading(true));
-  // }, []);
-
-  // useEffect(() => {
-  //   addEventListener("UserJoin", unityFullLoaded);
-  //   return () => {
-  //     removeEventListener("UserJoin", unityFullLoaded);
-  //   };
-  // }, [unityFullLoaded, addEventListener, removeEventListener])
-
-
-
-
-
+ 
 
 
     return (

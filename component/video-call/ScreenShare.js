@@ -50,6 +50,7 @@ const Content = () => {
         const token = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, userId, RtcRole.PUBLISHER, Math.floor(Date.now() / 1000) + 86400);
         rtc.current.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
         await rtc.current.client.join(appId, channelName, token, user.displayName);
+
         const initClientEvents = () => {
           rtc.current.client.on("user-joined", async (user) => {
 
@@ -115,6 +116,12 @@ const Content = () => {
     init()
   }, [])
 
+  
+      
+
+
+
+
 
 
 
@@ -134,6 +141,7 @@ const Content = () => {
   // }, [users])
 
   const streamhandle = async () => {
+   try {
     setUsers((prevUsers) => {
       return prevUsers.filter(User => User.uid !== user.displayName)
     })
@@ -142,9 +150,9 @@ const Content = () => {
         await rtc.current.client.unpublish([rtc.current.localScreenTrack]);
         rtc.current.localScreenTrack.stop();
         rtc.current.localScreenTrack.close();
-        setUsers((prevUsers) => {
-          return prevUsers.filter(User => User.uid !== user.displayName)
-        })
+        // setUsers((prevUsers) => {
+        //   return prevUsers.filter(User => User.uid !== user.displayName)
+        // })
         setUsers((prevUsers) => {
           return [...prevUsers, { uid: user.displayName, client: true, video: true }]
         })
@@ -161,7 +169,6 @@ const Content = () => {
           frameRate: 15,
         },
       });
-
       setUsers((prevUsers) => {
         return [...prevUsers, { uid: user.displayName, client: true, video: true, screenTrack: rtc.current.localScreenTrack, name: user.displayName }]
       })
@@ -169,6 +176,12 @@ const Content = () => {
       await rtc.current.client.publish([rtc.current.localScreenTrack]);
       setStreamStart(true)
     }
+   } catch (error) {
+     console.log(error)
+     setUsers((prevUsers) => {
+      return [...prevUsers, { uid: user.displayName, client: true, video: true }]
+    })
+   }
   }
 
   const [lastClickedIndex, setLastClickedIndex] = useState(null);
@@ -185,6 +198,33 @@ const Content = () => {
     setLastClickedIndex(index);
   }
   const dispatch = useDispatch()
+
+  // useEffect(() => {
+  //   const stream = navigator.mediaDevices.getUserMedia({ video: true });
+  //   const videoTrack = stream.getVideoTracks()[0];
+
+  //   const handleVideoEnded = () => {
+  //     // do what you need to do when video ends
+  //     alert('zaid nagori')
+  //   };
+
+  //   videoTrack.onended = handleVideoEnded;
+
+  //   return () => {
+  //     videoTrack.onended = null;
+  //   };
+  // }, []);
+    useEffect(() => {
+      rtc.current.localScreenTrack?.on("track-ended", async (evt) => {
+        await rtc.current.client.unpublish([rtc.current.localScreenTrack]);
+        rtc.current.localScreenTrack.stop();
+        rtc.current.localScreenTrack.close();
+        setStreamStart(false)
+      })
+    },[rtc.current.localScreenTrack])
+   
+
+
   return (
 
     <div className="screen-main-conatiner">
@@ -192,15 +232,15 @@ const Content = () => {
       <div className="row gy-0 gx-0">
         {element.length !== 0 && element.map((user, index) => <Video onClick={() => hadlearrayPostion(index)} key={user.uid} user={user} index={index} />)}
       </div>
-        <button className='spaces-new screen-share-position' style={{ width: 'max-content', paddingInline: '20px' }} onClick={streamhandle}>
+      <button className='spaces-new screen-share-position' style={{ width: 'max-content', paddingInline: '20px' }} onClick={streamhandle}>
         {
           StreamStart
-         ? 
-         'Stop Parsenting'
-         :
-         'Share Your Screen'
+            ?
+            'Stop Parsenting'
+            :
+            'Share Your Screen'
         }
-        </button>
+      </button>
 
     </div>
 
