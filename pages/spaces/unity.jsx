@@ -429,9 +429,9 @@ export const Unitypage = ({ children, enviroment}) => {
 
                         <form onSubmit={submitInput}>
                           <input
-                            style={{ width: `${inputName.length}ch`, textAlign: 'center' }}
+                            style={{ width: `${query.query.name.length}ch`, textAlign: 'center' }}
                             onChange={nameHandle}
-                            value={inputName}
+                            value={query.query.name}
                             type="text"
                           />
                         </form>
