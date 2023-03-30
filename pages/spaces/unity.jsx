@@ -570,10 +570,10 @@ export const UnityEnviroment = () => {
     addEventListener,
     removeEventListener,
   } = useUnityContext({
-    loaderUrl: "/Build/Build.loader.js",
-    dataUrl: "/Build/Build.data",
-    frameworkUrl: "/Build/Build.framework.js",
-    codeUrl: "/Build/Build.wasm",
+    loaderUrl: "/Build/build.loader.js",
+    dataUrl: "/Build/build.data",
+    frameworkUrl: "/Build/build.framework.js",
+    codeUrl: "/Build/build.wasm",
     webglContextAttributes: {
       preserveDrawingBuffer: true,
     },
