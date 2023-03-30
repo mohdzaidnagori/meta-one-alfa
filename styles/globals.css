@@ -2254,7 +2254,7 @@ input[type=range]::-webkit-slider-runnable-track {
   font-size: 20px;
 }
 .enviroment-card::after{
-  content: 'Meta-One';
+  content: 'Meta One';
   position: absolute;
   top: -18%;
   left: 28%;

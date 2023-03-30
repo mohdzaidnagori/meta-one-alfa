@@ -563,12 +563,7 @@ export const UnityEnviroment = () => {
     sendMessage,
     loadingProgression,
     isLoaded,
-    initialisationError,
     takeScreenshot,
-    onProgress,
-    onMessage,
-    addEventListener,
-    removeEventListener,
   } = useUnityContext({
     loaderUrl: "/Build/build.loader.js",
     dataUrl: "/Build/build.data",
@@ -591,7 +586,6 @@ export const UnityEnviroment = () => {
 
   const EnvironmentLoader = () => {
     sendMessage("GameController", "SelectModel", query.query.numb);
-    // sendMessage("GameController", "Turnoffkeyboard");
 
   }
   function handleCacheControl(url) {
@@ -602,20 +596,7 @@ export const UnityEnviroment = () => {
 
 
 
-  // const ModelLoader = () => {
-  //   const unityData = { id: query.query.id, type: 'spaces', }
-  //   const unityJson = JSON.stringify(unityData)
-  //   sendMessage("ModelLoader", "OtherModel", unityJson);
-  //   sendMessage("FileLoader", "OtherFiles", unityJson);
 
-  // }
-
-
-  // const CreateAndJoinRooms = () => {
-  //   const unityData = { roomID: query.query.id, playerID: user.uid }
-  //   const unityJson = JSON.stringify(unityData)
-  //   sendMessage("CreateAndJoinRooms", "GetRoomData", unityJson);
-  // }
 
 
   if (isLoaded && capture.length === 0) {

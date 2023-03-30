@@ -26,8 +26,8 @@ const Enviroment = () => {
         }
     ]
     const router = useRouter()
-    const handleenviroment = (num) =>{
-        router.push(`/spaces/unity?type=spaces&id=AQw8hFNDi0xFYl1KafXL&name=MOHD+ZAID+DEGINE&sceneId=DmoakA7G6EMESqE52vUK&numb=${num}`)
+    const handleenviroment = (num,name) =>{
+        router.push(`/spaces/unity?type=spaces&id=AQw8hFNDi0xFYl1KafXL&name=${name}&sceneId=DmoakA7G6EMESqE52vUK&numb=${num}`)
     }
     return (
         <div className="enviroment-conatiner">
@@ -38,7 +38,7 @@ const Enviroment = () => {
                     enviromentData &&
                     enviromentData.map((item) => {
                         return (
-                            <div className="enviroment-card-child" key={item.num} onClick={() => handleenviroment(item.num)}>
+                            <div className="enviroment-card-child" key={item.num} onClick={() => handleenviroment(item.num.item.name)}>
                                 <div className="enviroment-card-image">
                                     <Image src={item.url} layout='fill'alt={`enviroment${item.num}`}/>
                                 </div>
