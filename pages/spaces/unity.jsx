@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { useRouter } from "next/router"
-import { Fragment, useCallback, useEffect, useState, } from "react"
+import { Fragment, useCallback, useEffect, useRef, useState, } from "react"
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineDeploymentUnit, AiOutlineHeart, AiOutlineLeft, AiOutlineRight, AiOutlineSearch, AiOutlineUserAdd } from "react-icons/ai"
 import { RiCameraFill } from "react-icons/ri"
@@ -28,6 +28,7 @@ import { AddCapture, AddLoading, openScreenModal } from "../../component/redux/C
 import Directionmodal from "../../component/unity/Directionmodal";
 import { query as FireQuery } from 'firebase/firestore'
 import axios from "axios";
+import { usePointerLock } from 'react-unity-webgl';
 
 
 // import * as htmlToImage from "html-to-image";
@@ -37,10 +38,9 @@ import axios from "axios";
 
 
 
-export const Unitypage = ({ children, enviroment}) => {
+export const Unitypage = ({ children, enviroment }) => {
   const { user } = useAuth()
   const query = useRouter()
-
   const [buttons, setButtons] = useState({
     like: false,
     mic: false,
@@ -78,7 +78,7 @@ export const Unitypage = ({ children, enviroment}) => {
   const [hidebehindButtonChat, setHidebehindButtonChat] = useState(false)
   const [hidebehindButtonVideo, setHidebehindButtonVideo] = useState(false)
   const [directionModal, setDirectionModal] = useState(false)
- 
+
 
 
 
@@ -370,13 +370,13 @@ export const Unitypage = ({ children, enviroment}) => {
   return (
     <div className="unity-scene-spaces">
       <Toaster />
-      
+
       <div className='SidebarBox-unity-top-right'>
         <Chat open={showChat} close={chatHandle} />
       </div>
 
-      <div className="screen-container"  style={{ opacity: isOpenScreen ? '1' : '0' }}>
-       {children[1]}
+      <div className="screen-container" style={{ opacity: isOpenScreen ? '1' : '0' }}>
+        {children[1]}
       </div>
       <div className='SidebarBox-unity-top-left'>
         <motion.div
@@ -404,150 +404,150 @@ export const Unitypage = ({ children, enviroment}) => {
         <div className="newSpace">
           <Addcontent action={openModal} Urldata={(urlData) => setUrlData(urlData)} spaceId={query.query.id} />
         </div>}
-          {/* loading[loading.length -1] &&  */}
-          <div className="unity-interaction-container">
-            <div className="unity-interactions">
-              {
-                <div className="unity-leave" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
-                  <div className="unity-flex-child-leave cursor-pointer"
-                    onClick={leavehandle}>
-                    <span style={{ transform: 'rotate(180deg)' }}><IoExitOutline /></span>Exit
-                  </div>
-
-                </div>
-              }
-
-              <div className="unity-people">
-                <div className="unity-flex-child">
-                  <div className="unity-people-after" style=
-                    {{
-                      width: query.query.type === 'explore' ? 'max-content' : '100%'
-                    }}>
-                    {
-                      query.query.type === 'spaces' ?
-
-
-                        <form onSubmit={submitInput}>
-                          <input
-                            style={{ width: `${query.query.name.length}ch`, textAlign: 'center' }}
-                            onChange={nameHandle}
-                            value={query.query.name}
-                            type="text"
-                          />
-                        </form>
-
-                        : query.query.name
-                    }
-                    {
-                      query.query.type === 'spaces' &&
-                      <span className="unity-people-pencil" style={{ width: `${inputName.length}ch` }}><BiPencil /></span>
-                    }
-
-
-                  </div>
-
-
-                  <div className="bg-info rounded-circle image-space unity-avatar-border" onClick={agoraControl}>
-                    {
-                      user?.photoUrl ?
-                        <Image className="space-avtar-img" src={user?.photoUrl ? user?.photoUrl : '/images/login-images/thumbnail.png'} priority={true} layout='fill' alt="avatarImages" />
-                        :
-                        <Image src='/images/login-images/thumbnail.png' priority={true} layout='fill' alt="thumbnailImages" />
-                    }
-                  </div>
-                </div>
-                {
-                  agoraUsermodal && <Agorausermodal close={agoraControl} />
-                }
+      {/* loading[loading.length -1] &&  */}
+      <div className="unity-interaction-container">
+        <div className="unity-interactions">
+          {
+            <div className="unity-leave" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
+              <div className="unity-flex-child-leave cursor-pointer"
+                onClick={leavehandle}>
+                <span style={{ transform: 'rotate(180deg)' }}><IoExitOutline /></span>Exit
               </div>
-              <div className="unity-like">
-                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
-                  <div className="like">
-                    <span className={buttons.like ? "like-red" : ''} onClick={likeHandle}>
-                      {
-                        buttons.like ? <AiFillHeart /> : <AiOutlineHeart />
-                      }
-                    </span> {buttons.count}
-                  </div>
-                  <div className="camera unity-hover" data-name={"screenshot"} onClick={captureImage}>
-                    <RiCameraFill />
-                  </div>
-                  <div onClick={copy} style={{ fontSize: '17px' }} className="camera unity-hover" data-name={!copied ? "Copy link" : "Copied!"} >
-                    <BsShare />
-                  </div>
-                </div>
+
+            </div>
+          }
+
+          <div className="unity-people">
+            <div className="unity-flex-child">
+              <div className="unity-people-after" style=
+                {{
+                  width: query.query.type === 'explore' ? 'max-content' : '100%'
+                }}>
+                {
+                  query.query.type === 'spaces' ?
+
+
+                    <form onSubmit={submitInput}>
+                      <input
+                        style={{ width: `${query.query.name.length}ch`, textAlign: 'center' }}
+                        onChange={nameHandle}
+                        value={query.query.name}
+                        type="text"
+                      />
+                    </form>
+
+                    : query.query.name
+                }
+                {
+                  query.query.type === 'spaces' &&
+                  <span className="unity-people-pencil" style={{ width: `${inputName.length}ch` }}><BiPencil /></span>
+                }
+
+
+              </div>
+
+
+              <div className="bg-info rounded-circle image-space unity-avatar-border" onClick={agoraControl}>
+                {
+                  user?.photoUrl ?
+                    <Image className="space-avtar-img" src={user?.photoUrl ? user?.photoUrl : '/images/login-images/thumbnail.png'} priority={true} layout='fill' alt="avatarImages" />
+                    :
+                    <Image src='/images/login-images/thumbnail.png' priority={true} layout='fill' alt="thumbnailImages" />
+                }
               </div>
             </div>
-
-            <div className="unity-interactions">
-              <div className="unity-leave" onClick={() => micHandle('video')}>
-                <div className="unity-flex-child" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
-                  <span>Stream</span> <span className="exit-rotate-unity"><AiOutlineDeploymentUnit /> </span>
-                </div>
-                {/* <div onClick={() => micHandle('video')} data-name={buttons.videoCam ? 'Turn of camera' : 'Turn on camera'} className="unity-flex-child unity-hover">
-              { videoCam ?  <BsCameraVideo /> :<BsCameraVideoOff/> }
-              </div>  */}
+            {
+              agoraUsermodal && <Agorausermodal close={agoraControl} />
+            }
+          </div>
+          <div className="unity-like">
+            <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
+              <div className="like">
+                <span className={buttons.like ? "like-red" : ''} onClick={likeHandle}>
+                  {
+                    buttons.like ? <AiFillHeart /> : <AiOutlineHeart />
+                  }
+                </span> {buttons.count}
               </div>
-              <div className="unity-control">
-                {
-                  query.query.type === 'explore' ?
-                    <div className="unity-flex-child">
-                      <span><AiOutlineLeft /></span>
-                      <span className="unity-play" onClick={playHandle}>
-                        {
-                          buttons.play
-                            ?
-                            <GiPauseButton />
-                            :
-                            <FiPlay />
-                        }
-                      </span>
-                      <span><AiOutlineRight /></span>
-                    </div>
-                    : <div className="unity-bottom-center-flex" style={{ opacity: 0 }}>
-                      <div
-                        onClick={() => setButtons(prev => (
-                          {
-                            ...prev,
-                            open: !buttons.open
-                          }
-                        ))
-                        }
-                        className="unity-bottom-center unity-hover cursor-pointer" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
-                      <div onClick={searchhandle} className="unity-bottom-center unity-hover cursor-pointer" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
-                      <div onClick={openModal} className="unity-bottom-center unity-hover cursor-pointer" data-name="Add content" style={{ backgroundColor: '#28f' }}><MdAdd /></div>
-                      <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Add portal Coming soon"><GiPortal /></div>
-                      <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
-                    </div>
-                }
+              <div className="camera unity-hover" data-name={"screenshot"} onClick={captureImage}>
+                <RiCameraFill />
               </div>
-              <div className="unity-help">
-                <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
-
-                  <div className={directionModal ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Help" onClick={directionModalHandle}><BiDirections /></div>
-                  <div className={isOpenScreen ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Screen Share" onClick={() => dispatch(openScreenModal())}><MdOutlineScreenShare /></div>
-                  <div onClick={ChatOpenhandle} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat />
-                    {readfilter.length > 0 &&
-                      <span className="chat-notifications-count"></span>
-                    }
-                  </div>
-
-                  <span><BiDotsHorizontalRounded /></span>
-                </div>
-                {directionModal && <Directionmodal close={directionModalHandle} />}
+              <div onClick={copy} style={{ fontSize: '17px' }} className="camera unity-hover" data-name={!copied ? "Copy link" : "Copied!"} >
+                <BsShare />
               </div>
             </div>
           </div>
-        
+        </div>
+
+        <div className="unity-interactions">
+          <div className="unity-leave" onClick={() => micHandle('video')}>
+            <div className="unity-flex-child" style={{ opacity: hidebehindButtonVideo ? '0' : '1' }}>
+              <span>Stream</span> <span className="exit-rotate-unity"><AiOutlineDeploymentUnit /> </span>
+            </div>
+            {/* <div onClick={() => micHandle('video')} data-name={buttons.videoCam ? 'Turn of camera' : 'Turn on camera'} className="unity-flex-child unity-hover">
+              { videoCam ?  <BsCameraVideo /> :<BsCameraVideoOff/> }
+              </div>  */}
+          </div>
+          <div className="unity-control">
+            {
+              query.query.type === 'explore' ?
+                <div className="unity-flex-child">
+                  <span><AiOutlineLeft /></span>
+                  <span className="unity-play" onClick={playHandle}>
+                    {
+                      buttons.play
+                        ?
+                        <GiPauseButton />
+                        :
+                        <FiPlay />
+                    }
+                  </span>
+                  <span><AiOutlineRight /></span>
+                </div>
+                : <div className="unity-bottom-center-flex" style={{ opacity: 0 }}>
+                  <div
+                    onClick={() => setButtons(prev => (
+                      {
+                        ...prev,
+                        open: !buttons.open
+                      }
+                    ))
+                    }
+                    className="unity-bottom-center unity-hover cursor-pointer" data-name="Sticky note Coming soon"><MdOutlineSpeakerNotes /></div>
+                  <div onClick={searchhandle} className="unity-bottom-center unity-hover cursor-pointer" data-name="Search or URL Coming soon"><AiOutlineSearch /></div>
+                  <div onClick={openModal} className="unity-bottom-center unity-hover cursor-pointer" data-name="Add content" style={{ backgroundColor: '#28f' }}><MdAdd /></div>
+                  <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Add portal Coming soon"><GiPortal /></div>
+                  <div className="unity-bottom-center unity-hover cursor-pointer" data-name="Share screen Coming soon"><MdOutlineScreenShare /></div>
+                </div>
+            }
+          </div>
+          <div className="unity-help">
+            <div className="unity-flex-child" style={{ opacity: hidebehindButtonChat ? '0' : '1' }}>
+
+              <div className={directionModal ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Help" onClick={directionModalHandle}><BiDirections /></div>
+              <div className={isOpenScreen ? "unity-bottom-center" : "unity-bottom-center unity-hover"} data-name="Screen Share" onClick={() => dispatch(openScreenModal())}><MdOutlineScreenShare /></div>
+              <div onClick={ChatOpenhandle} className="unity-bottom-center unity-hover" data-name="Chat"><BsChat />
+                {readfilter.length > 0 &&
+                  <span className="chat-notifications-count"></span>
+                }
+              </div>
+
+              <span><BiDotsHorizontalRounded /></span>
+            </div>
+            {directionModal && <Directionmodal close={directionModalHandle} />}
+          </div>
+        </div>
+      </div>
+
       {/* } */}
-    
-   
+
+
 
 
 
 
       <div className="unity-scene">
-         {enviroment}
+        {enviroment}
       </div>
 
     </div>
@@ -556,6 +556,7 @@ export const Unitypage = ({ children, enviroment}) => {
 }
 export const UnityEnviroment = () => {
   const capture = useSelector((state) => state.capture.capture);
+  const [doubleClick, setDoubleClick] = useState(false);
   const { user } = useAuth()
   const query = useRouter()
   const {
@@ -564,13 +565,17 @@ export const UnityEnviroment = () => {
     loadingProgression,
     isLoaded,
     takeScreenshot,
+    requestFullscreen,
+    requestPointerLock,
+    addEventListener,
+    removeEventListener,
   } = useUnityContext({
     loaderUrl: "/Build/build.loader.js",
     dataUrl: "/Build/build.data",
     frameworkUrl: "/Build/build.framework.js",
     codeUrl: "/Build/build.wasm",
     webglContextAttributes: {
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
     },
     cacheControl: handleCacheControl,
   });
@@ -586,13 +591,32 @@ export const UnityEnviroment = () => {
 
   const EnvironmentLoader = () => {
     sendMessage("GameController", "SelectModel", query.query.numb);
+    sendMessage('ChatFunction', 'Turnoffkeyboard')
 
   }
   function handleCacheControl(url) {
     console.log(`Cache control for ${url}`);
     return "no-cache";
   }
+  useEffect(() => {
+    const handleDoubleClick = async () => {
+      // requestFullscreen(true)
+      if(!doubleClick){
+      try {
+        await requestPointerLock();
+        await requestFullscreen(true);
+        setDoubleClick(true)
+      } catch (error) {
+        console.error('Fullscreen and/or pointer lock request cancelled:', error);
+      }
+    }
 
+    };
+    document.body.addEventListener('dblclick', handleDoubleClick);
+    return () => {
+      document.body.removeEventListener('dblclick', handleDoubleClick);
+    };
+  }, [isLoaded, requestFullscreen, requestPointerLock]);
 
 
 
@@ -602,23 +626,23 @@ export const UnityEnviroment = () => {
   if (isLoaded && capture.length === 0) {
     EnvironmentLoader()
   }
- 
 
 
-    return (
-      <Fragment>
-        {!isLoaded && (
-          <Unityloader loading={loading} envirometname={query.query.name} />
-        )}
 
-        < Unity
-          unityProvider={unityProvider}
-          tabIndex={1}
-          style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
-        />
+  return (
+    <Fragment>
+      {!isLoaded && (
+        <Unityloader loading={loading} envirometname={query.query.name} />
+      )}
 
-      </Fragment>
-    )
+      < Unity
+        unityProvider={unityProvider}
+        tabIndex={1}
+        style={{ visibility: isLoaded ? "visible" : "hidden", width: '100%', height: '100%', overflow: 'hidden' }}
+      />
+
+    </Fragment>
+  )
 }
 
 
@@ -637,7 +661,7 @@ const Wrapper = () => {
 
   return (
     <Unitypage enviroment={<UnityEnviromentMemo />} >
-      <AppMemo channelName={query.query.id}  />
+      <AppMemo channelName={query.query.id} />
       <ScreenMemo />
     </Unitypage>
   )
