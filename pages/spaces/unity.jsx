@@ -591,7 +591,7 @@ export const UnityEnviroment = () => {
 
   const EnvironmentLoader = () => {
     sendMessage("GameController", "SelectModel", query.query.numb);
-    sendMessage('ChatFunction', 'Turnoffkeyboard')
+    // sendMessage('ChatFunction', 'Turnoffkeyboard')
 
   }
   function handleCacheControl(url) {
