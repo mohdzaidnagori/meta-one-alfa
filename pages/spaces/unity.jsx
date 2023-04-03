@@ -606,7 +606,6 @@ export const UnityEnviroment = () => {
         await requestPointerLock();
         await requestFullscreen(true);
         setDoubleClick(true)
-        console.log('run')
       } catch (error) {
         console.error('Fullscreen and/or pointer lock request cancelled:', error);
       }
