@@ -601,15 +601,15 @@ export const UnityEnviroment = () => {
   useEffect(() => {
     const handleDoubleClick = async () => {
       // requestFullscreen(true)
-      if(!doubleClick){
-      try {
-        await requestPointerLock();
-        await requestFullscreen(true);
-        setDoubleClick(true)
-      } catch (error) {
-        console.error('Fullscreen and/or pointer lock request cancelled:', error);
+      if (!doubleClick) {
+        try {
+          await requestPointerLock();
+          await requestFullscreen(true);
+          setDoubleClick(true)
+        } catch (error) {
+          console.error('Fullscreen and/or pointer lock request cancelled:', error);
+        }
       }
-    }
 
     };
     document.body.addEventListener('dblclick', handleDoubleClick);
@@ -625,6 +625,7 @@ export const UnityEnviroment = () => {
 
   if (isLoaded && capture.length === 0) {
     EnvironmentLoader()
+    console.log('push')
   }
 
 
