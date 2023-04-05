@@ -10,7 +10,7 @@ const Enviroment = () => {
             num: 3
         },
         {
-            name: 'Skilliza Metaverce',
+            name: 'Skilliza Metaverse',
             url: 'https://i.ibb.co/qDdTvL2/3-1.png',
             num: 2
         },
@@ -26,7 +26,7 @@ const Enviroment = () => {
         }
     ]
     const router = useRouter()
-    const handleenviroment = (num,name) =>{
+    const handleenviroment = (num, name) => {
         router.push(`/spaces/unity?type=spaces&id=AQw8hFNDi0xFYl1KafXL&name=${name}&sceneId=DmoakA7G6EMESqE52vUK&numb=${num}`)
     }
     return (
@@ -38,9 +38,9 @@ const Enviroment = () => {
                     enviromentData &&
                     enviromentData.map((item) => {
                         return (
-                            <div className="enviroment-card-child" key={item.num} onClick={() => handleenviroment(item.num,item.name)}>
+                            <div className="enviroment-card-child" key={item.num} onClick={() => handleenviroment(item.num, item.name)}>
                                 <div className="enviroment-card-image">
-                                    <Image src={item.url} layout='fill'alt={`enviroment${item.num}`}/>
+                                    <Image src={item.url} layout='fill' alt={`enviroment${item.num}`} />
                                 </div>
                                 <div className="enviroment-card-text">{item.name}</div>
                             </div>

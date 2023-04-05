@@ -625,7 +625,6 @@ export const UnityEnviroment = () => {
 
   if (isLoaded && capture.length === 0) {
     EnvironmentLoader()
-    console.log('push')
   }
 
 
