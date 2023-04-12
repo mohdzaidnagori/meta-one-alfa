@@ -584,7 +584,7 @@ export const UnityEnviroment = () => {
   if (capture[capture.length - 1] === true) {
     const dataUrl = takeScreenshot("image/jpg", 1.0);
     saveAs(dataUrl, 'image.jpg') // Put your image url here.
-    console.log('ok bn')
+    console.log('ok')
   }
 
 
