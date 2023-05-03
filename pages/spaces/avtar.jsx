@@ -7,14 +7,14 @@ import { useAuth } from '../../component/router/AuthContext';
 const Avtar = () => {
   const { user } = useAuth()
   const { unityProvider,sendMessage,loadingProgression, isLoaded} = useUnityContext({
-    loaderUrl: "/Build/avatar/Build.loader.js",
-    dataUrl: "/Build/avatar/Build.data",
-    frameworkUrl: "/Build/avatar/Build.framework.js",
-    codeUrl: "/Build/avatar/Build.wasm",
+    loaderUrl: "/Build/avatar/avatar.loader.js",
+    dataUrl: "/Build/avatar/avatar.data",
+    frameworkUrl: "/Build/avatar/avatar.framework.js",
+    codeUrl: "/Build/avatar/avatar.wasm",
   });
   const loading = Math.round(loadingProgression * 100)
   const EnvironmentLoader = () => {
-    sendMessage('Remy_V4', 'getAvatar', user.uid);
+    sendMessage('GetUserID','Userdata', user.uid);
 
   }
   if(isLoaded){

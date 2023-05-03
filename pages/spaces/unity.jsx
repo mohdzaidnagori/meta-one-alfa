@@ -590,10 +590,11 @@ export const UnityEnviroment = () => {
 
 
   const EnvironmentLoader = () => {
-    sendMessage("GameController", "SelectModel", query.query.numb);
-    // sendMessage('ChatFunction', 'Turnoffkeyboard')
-
+    const unityData = { numb: query.query.numb, userID: user.uid }
+    const unityJson = JSON.stringify(unityData)
+    sendMessage("GameController", "SelectModel", unityJson);
   }
+
   function handleCacheControl(url) {
     console.log(`Cache control for ${url}`);
     return "no-cache";
