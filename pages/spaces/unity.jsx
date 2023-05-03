@@ -596,7 +596,6 @@ export const UnityEnviroment = () => {
   }
 
   function handleCacheControl(url) {
-    console.log(`Cache control for ${url}`);
     return "no-cache";
   }
   useEffect(() => {
